@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>部门</title>
+{#    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">#}
+{#    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>#}
+    <link rel="stylesheet" href="{% static 'css/bootstrap-3.3.6.min.css' %}">
+</head>
+<body>
+    <h1>部门信息</h1>
+    <hr>
+    <div class="container-fluid">
+	<div class="row-fluid col-md-8">
+		<div class="span12">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr class="info">
+						<th class="text-center">
+							编号
+						</th>
+						<th class="text-center">
+							部门名称
+						</th>
+						<th class="text-center">
+							部门所在地
+						</th>
+                        <th class="text-center">
+                            是否优秀
+                        </th>
+                        <th class="text-center">操作
+                        </th>
+					</tr>
+				</thead>
+				<tbody>
+                {% csrf_token %}
+                {% for dept in depts %}
+					<tr>
+						<td class="text-center">
+							{{ dept.no }}
+						</td>
+						<td class="text-center">
+							<a href="/hrs/emps?dno={{ dept.no }}">
+                                {{ dept.name }}
+                            </a>
+						</td>
+                        <td class="text-center">
+							{{ dept.location }}
+						</td>
+                        {% if dept.excellent %}
+                        <td class="text-center">
+							<span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+						</td>
+                            {% else %}
+                        <td class="text-center">
+							<span class="glyphicon glyphicon-star-empty" aria-hidden="true"></span>
+						</td>
+                        {% endif %}
+
+                        <td class="text-center">
+                            <button type="button" value="{{ dept.no }}" class="btn btn-xs btn-warning deldept">
+                                删除
+                            </button>
+                        </td>
+					</tr>
+                {% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+<script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-3.3.6.min.js' %}"></script>
+<script>
+    $(function () {
+        $('.deldept').on('click', function (e) {
+            var dno = $(e.target).attr('value');
+            var cho = confirm('是否删除？');
+            var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+            if (cho){
+                $.ajax({
+                type: "POST",
+                url: '/hrs/deldept',
+                data: {
+                    dno:dno, csrfmiddlewaretoken:csrfmiddlewaretoken
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data==1) {
+                        alert('删除成功~');
+                        location.reload()
+                    }
+                    if (data==0){
+                        alert('部门下有员工，要删除部门请先删除员工~')
+                    }
+                },
+                error: function (data) {
+                    alert('删除失败~')
+                }
+            })
+            }
+    })
+    });
+</script>
+</html>

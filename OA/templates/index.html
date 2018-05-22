@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+    <h1>Hello, Django!</h1>
+    <hr>
+    <img src="{% static 'images/mm.jpg' %}">
+    <h1>{{ greeting }}</h1>
+    <h3>{{ current_time }}</h3>
+    <h3>今天推荐{{ num }}种水果：</h3>
+    <ul>
+        {% for fruit in fruits %}
+        <li>{{ fruit }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

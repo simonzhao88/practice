@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>员工</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-3.3.6.min.css' %}">
+    <script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap-3.3.6.min.js' %}"></script>
+</head>
+<body>
+<h1>员工信息</h1>
+    <hr>
+    <div class="container-fluid">
+	<div class="row-fluid col-md-8">
+		<div class="span12">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr class="info">
+						<th class="text-center">
+							编号
+						</th>
+						<th class="text-center">
+							员工姓名
+						</th>
+						<th class="text-center">
+							职位
+						</th>
+                        <th class="text-center">
+                            工资
+                        </th>
+                        <th class="text-center">
+                            部门
+                        </th>
+					</tr>
+				</thead>
+				<tbody>
+                {% for emp in emps %}
+					<tr>
+						<td class="text-center">
+							{{ emp.no }}
+						</td>
+						<td class="text-center">
+							{{ emp.name }}
+						</td>
+                        <td class="text-center">
+							{{ emp.job }}
+						</td>
+						<td class="text-center">
+							{{ emp.sal }}
+						</td>
+                        <td class="text-center">
+                            {{ emp.dept }}
+                        </td>
+					</tr>
+                {% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>
