@@ -1,10 +1,13 @@
 from datetime import datetime
+from json import dumps
 from random import randrange
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
-from django.shortcuts import render
-
+from django.shortcuts import render, redirect
 # Create your views here.
+from django.urls import reverse
+
 from hrs.models import Dept, Emp
 
 
@@ -28,18 +31,18 @@ def depts(request):
     return render(request, 'dept.html', context=ctx)
 
 
-def emps(request):
-    try:
-        dno = request.GET['dno']
-    except:
-        dno = ''
+def emps(request, dno=0):
     if dno:
+        emps_list = Emp.objects.filter(dept__no=dno).select_related('dept')
         ctx = {
-            'emps': Emp.objects.filter(dept_id=dno)
-        }
+            'emps': emps_list,
+            'dept_name': emps_list[0].dept}\
+            if len(emps_list) > 0 else \
+            {'dept_name': Dept.objects.get(no=dno).name}
     else:
         ctx = {
-            'emps': Emp.objects.all()
+            'emps': Emp.objects.all(),
+            'dept_name': '全部'
         }
     return render(request, 'emp.html', context=ctx)
 
@@ -51,4 +54,15 @@ def deldept(request):
         return HttpResponse('1')
     except BaseException:
         return HttpResponse('0')
+
+
+def delemp(request):
+    try:
+        eno = request.POST['eno']
+        Emp.objects.get(no=eno).delete()
+        ctx = {'code': 200}
+        return HttpResponse(dumps(ctx), content_type='application/json; charset=utf-8')
+    except (ValueError, ObjectDoesNotExist):
+        ctx = {'code': 404}
+        return HttpResponse(dumps(ctx), content_type='application/json; charset=utf-8')
 

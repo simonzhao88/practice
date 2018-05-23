@@ -28,7 +28,7 @@ class Emp(models.Model):
     mgr = models.IntegerField(null=True, blank=True)
     sal = models.DecimalField(max_digits=7, decimal_places=2)
     comm = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
-    dept = models.ForeignKey(Dept, on_delete=models.PROTECT)
+    dept = models.ForeignKey(Dept, on_delete=models.PROTECT, related_name='emps')
 
     class Meta:
         db_table = 'tb_emp'
