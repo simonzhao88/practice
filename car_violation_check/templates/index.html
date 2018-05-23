@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>车辆违章查询</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-3.3.6.min.css' %}">
+</head>
+<body>
+<div class="container-fluid">
+    <h1>车辆违章查询</h1>
+    <hr>
+	<div class="row-fluid">
+		<div class="span12 text-center">
+            {% csrf_token %}
+			<form class="form-search form-inline">
+                <input type="text" class="form-control" id="searchbox" placeholder="请输入车牌号">
+                <button type="button" class="btn btn-primary" id="search">查找</button>
+			</form>
+		</div>
+	</div>
+    <hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>
+							编号
+						</th>
+						<th>
+							车牌
+						</th>
+						<th>
+							违章原因
+						</th>
+						<th>
+							违章日期
+						</th>
+                        <th>
+							处罚方式
+						</th>
+                        <th>
+							是否受理
+						</th>
+					</tr>
+				</thead>
+				<tbody id="tbody">
+{#					<tr>#}
+{#						<td>#}
+{#							1#}
+{#						</td>#}
+{#						<td>#}
+{#							TB - Monthly#}
+{#						</td>#}
+{#						<td>#}
+{#							01/04/2012#}
+{#						</td>#}
+{#						<td>#}
+{#							Default#}
+{#						</td>#}
+{#                        <td>#}
+{#							Default#}
+{#						</td>#}
+{#                        <td>#}
+{#							Default#}
+{#						</td>#}
+{#					</tr>#}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+<script src="{% static 'js/jquery-2.1.4.min.js' %}"></script>
+<script src="{% static 'js/bootstrap-3.3.6.min.js' %}"></script>
+<script src="{% static 'js/bootbox.min.js' %}"></script>
+<script>
+    $(function () {
+        $('#search').on('click', function (e) {
+            var content = $('#searchbox').val();
+            var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
+            bootbox.setDefaults("locale", "zh_CN");
+            if (content) {
+                $.ajax({
+                    url: '/showrecord',
+                    type: 'POST',
+                    data: {
+                        content: content, csrfmiddlewaretoken: csrfmiddlewaretoken
+                    },
+                    dataType: 'json',
+                    success: function (datas) {
+                        if (datas){
+                            for (var i =0 ; i< datas.records.length; i++){
+                                var data = datas.records[i];
+                                var record = '<tr><td></td><td>'+ data.lic_plate +
+                                    '</td><td>' + data.reason + '</td><td>' + data.v_date +
+                                    '</td><td>' + data.punishment + '</td><td>' + data.is_accept
+                                    + '</td>';
+                                $('#tbody').append(record)
+                            }
+                        }else {
+                            bootbox.alert({
+                                title: '提示',
+                                message: '未查到该车辆信息~~',
+                            });
+                        }
+                    },
+                    error: function () {
+                        bootbox.alert({
+                                title: '提示',
+                                message: '连接服务器失败，请稍后再试~~',
+                            });
+                    }
+                });
+            }else {
+                bootbox.alert({
+                    title: '提示',
+                    message: '车牌号不能为空~~',
+                });
+            }
+        })
+    })
+</script>
+</html>
