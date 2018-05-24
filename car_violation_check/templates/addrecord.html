@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加记录</title>
+</head>
+<body>
+    <h1>添加违章记录</h1>
+    <hr>
+    <p>
+        {% for err in errors %}
+            <div style="color: red; font-size: 12px;">{{ err }}</div>
+        {% endfor %}
+    </p>
+    <form action="{% url 'addrecord' %}" method="post">
+        {% csrf_token %}
+        <table>
+            {{ f.as_table }}
+        </table>
+        <input type="submit" value="添加">
+    </form>
+</body>
+</html>

@@ -16,6 +16,7 @@
 			<form class="form-search form-inline">
                 <input type="text" class="form-control" id="searchbox" placeholder="请输入车牌号">
                 <button type="button" class="btn btn-primary" id="search">查找</button>
+                <a style="text-decoration: none" href="{% url 'addrecord' %}">添加记录</a>
 			</form>
 		</div>
 	</div>
@@ -57,7 +58,13 @@
 <script src="{% static 'js/bootbox.min.js' %}"></script>
 <script>
     $(function () {
-        $('#search').on('click', function (e) {
+         $(document).on('keydown', function (e) {
+            if (e.keyCode==13){
+                $('#search').click();
+                e.preventDefault();
+            }
+        });
+        $('#search').on('click', function () {
             var content = $('#searchbox').val();
             var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
             bootbox.setDefaults("locale", "zh_CN");
@@ -74,6 +81,15 @@
                         if (datas[0]){
                             $('#tbody').children().remove();
                             for (var i =0 ; i< datas.length; i++){
+                                var data = datas[i];
+                                var record = '<tr><td>' + data.no + '</td><td>'+ data.lic_plate +
+                                    '</td><td>' + data.reason + '</td><td>' + data.v_date +
+                                    '</td><td>' + data.punishment + '</td><td>'
+                                    + data.is_accept + '</td>';
+                                $('#tbody').append(record.replace(/null/, '-').replace(/false/, '否')
+                                    .replace(/true/, '是'))
+                            }
+                            /*for (var i =0 ; i< datas.length; i++){
                                 var data = datas[i]['fields'];
                                 var record = '<tr><td>' + datas[i].pk + '</td><td>'+ data.lic_plate +
                                     '</td><td>' + data.reason + '</td><td>' + data.v_date +
@@ -81,7 +97,7 @@
                                     + data.is_accept + '</td>';
                                 $('#tbody').append(record.replace(/null/, '-').replace(/false/, '否')
                                     .replace(/true/, '是'))
-                            }
+                            }*/
                         }else {
                             $('#tbody').children().remove();
                             bootbox.alert({
