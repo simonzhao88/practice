@@ -21,7 +21,7 @@
 	</div>
     <hr>
 	<div class="row-fluid">
-		<div class="span12">
+		<div class="span12" style="display: none">
 			<table class="table">
 				<thead>
 					<tr>
@@ -46,26 +46,6 @@
 					</tr>
 				</thead>
 				<tbody id="tbody">
-{#					<tr>#}
-{#						<td>#}
-{#							1#}
-{#						</td>#}
-{#						<td>#}
-{#							TB - Monthly#}
-{#						</td>#}
-{#						<td>#}
-{#							01/04/2012#}
-{#						</td>#}
-{#						<td>#}
-{#							Default#}
-{#						</td>#}
-{#                        <td>#}
-{#							Default#}
-{#						</td>#}
-{#                        <td>#}
-{#							Default#}
-{#						</td>#}
-{#					</tr>#}
 				</tbody>
 			</table>
 		</div>
@@ -82,6 +62,7 @@
             var csrfmiddlewaretoken = $("[name='csrfmiddlewaretoken']").val();
             bootbox.setDefaults("locale", "zh_CN");
             if (content) {
+                $('.span12').css('display', 'block');
                 $.ajax({
                     url: '/showrecord',
                     type: 'POST',
@@ -90,33 +71,36 @@
                     },
                     dataType: 'json',
                     success: function (datas) {
-                        if (datas){
-                            for (var i =0 ; i< datas.records.length; i++){
-                                var data = datas.records[i];
-                                var record = '<tr><td></td><td>'+ data.lic_plate +
+                        if (datas[0]){
+                            $('#tbody').children().remove();
+                            for (var i =0 ; i< datas.length; i++){
+                                var data = datas[i]['fields'];
+                                var record = '<tr><td>' + datas[i].pk + '</td><td>'+ data.lic_plate +
                                     '</td><td>' + data.reason + '</td><td>' + data.v_date +
-                                    '</td><td>' + data.punishment + '</td><td>' + data.is_accept
-                                    + '</td>';
-                                $('#tbody').append(record)
+                                    '</td><td>' + data.punishment + '</td><td>'
+                                    + data.is_accept + '</td>';
+                                $('#tbody').append(record.replace(/null/, '-').replace(/false/, '否')
+                                    .replace(/true/, '是'))
                             }
                         }else {
+                            $('#tbody').children().remove();
                             bootbox.alert({
                                 title: '提示',
-                                message: '未查到该车辆信息~~',
+                                message: '未查到该车辆信息~~'
                             });
                         }
                     },
                     error: function () {
                         bootbox.alert({
                                 title: '提示',
-                                message: '连接服务器失败，请稍后再试~~',
+                                message: '连接服务器失败，请稍后再试~~'
                             });
                     }
                 });
             }else {
                 bootbox.alert({
                     title: '提示',
-                    message: '车牌号不能为空~~',
+                    message: '车牌号不能为空~~'
                 });
             }
         })

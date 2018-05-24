@@ -17,14 +17,7 @@ def showrecord(request):
     record_set = Trecord.objects.filter(lic_plate__contains=content)
     if record_set:
         record_lists = loads(serializers.serialize('json', record_set, ensure_ascii=False))
-        record_list = []
-        for records in record_lists:
-            record_list.append(records['fields'])
-        print(record_list)
-        ctx = {
-            'records': record_list
-        }
-        print(dumps(ctx, ensure_ascii=False))
-        return HttpResponse(dumps(ctx), content_type='application/json; charset=utf-8')
+        print(record_lists)
+        return HttpResponse(dumps(record_lists), content_type='application/json; charset=utf-8')
     else:
-        return HttpResponse('{}')
+        return HttpResponse('')
