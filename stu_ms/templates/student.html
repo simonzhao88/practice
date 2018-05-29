@@ -30,12 +30,16 @@
             <tr>
                 <th>序号</th>
                 <th>学生名称</th>
+                <th>班级</th>
+                <th>头像</th>
                 <th>操作</th>
             </tr>
             {% for stu in pages %}
                 <tr>
                     <td>{{ stu.id }}</td>
                     <td>{{ stu.s_name }}</td>
+                    <td>{{ stu.g.g_name }}</td>
+                    <td><img src="/media/{{ stu.s_img }}"></td>
                     <td><a href="{% url 'stu:editstu' stu.id %}">编辑</a> | <a href="{% url 'stu:delstu' stu.id %}">删除</a>
                     </td>
                 </tr>
@@ -50,7 +54,11 @@
             <li><a href="{% url 'stu:student' %}?page_num={{ pages.previous_page_number }}">上一页</a></li>
         {% endif %}
         {% for i in pages.paginator.page_range %}
+            {% ifequal pages.number i  %}
+            <li page_num="{{ i }}"><a href="{% url 'stu:student' %}?page_num={{ i }}" class="active">{{ i }}</a></li>
+            {% else %}
             <li page_num="{{ i }}"><a href="{% url 'stu:student' %}?page_num={{ i }}">{{ i }}</a></li>
+            {% endifequal %}
         {% endfor %}
         {% if pages.has_next %}
             <li><a href="{% url 'stu:student' %}?page_num={{ pages.next_page_number }}">下一页</a></li>

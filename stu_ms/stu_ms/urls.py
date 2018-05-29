@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.contrib.staticfiles.urls import static
+from stu_ms.settings import MEDIA_ROOT, MEDIA_URL
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^stu/', include('stu.urls', namespace='stu')),
+    url(r'^user/', include('user.urls', namespace='user')),
 ]
+
+urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)

@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'stu'
+    'stu',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 自定义中间件完成登录验证功能
+    'utils.UserAuthMiddleware.UserAuthMiddle',
 ]
 
 ROOT_URLCONF = 'stu_ms.urls'
@@ -78,10 +81,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'stu',
-        'HOST': 'localhost',
+        'HOST': '10.7.152.90',
         'PORT': '3306',
         'USER': 'root',
-        'PASSWORD': 'root'
+        'PASSWORD': '123456'
     }
 }
 
@@ -125,3 +128,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 没有登录跳转地址
+LOGIN_URL = '/user/login/'

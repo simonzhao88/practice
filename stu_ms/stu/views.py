@@ -1,5 +1,4 @@
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 
 from stu.models import Grade, Student
@@ -75,17 +74,16 @@ def add_grade(request, gid=0):
                 'grade': Grade.objects.get(id=gid)
             }
             return render(request, 'addgrade.html', context=ctx)
-    if request.method == 'POST':
-        g_name = request.POST.get('grade_name')
-        if gid == 0:
-            g = Grade()
-            g.g_name = g_name
-            g.save()
-        else:
-            g = Grade.objects.filter(id=gid).first()
-            g.g_name = g_name
-            g.save()
-        return redirect('stu:grade')
+    g_name = request.POST.get('grade_name')
+    if gid == 0:
+        g = Grade()
+        g.g_name = g_name
+        g.save()
+    else:
+        g = Grade.objects.filter(id=gid).first()
+        g.g_name = g_name
+        g.save()
+    return redirect('stu:grade')
     # 若是HttpResponseRedirect则要导入reverse()方法
 
 
@@ -137,18 +135,18 @@ def add_stu(request, sid):
                 'grades': Grade.objects.all()
             }
         return render(request, 'addstu.html', context=ctx)
-    if request.method == 'POST':
-        s_name = request.POST.get('stu_name')
-        g_id = request.POST.get('g_id')
-        g = Grade.objects.filter(id=g_id).first()
-        if sid == 0:
-            Student.objects.create(s_name=s_name, g=g)
-        else:
-            s = Student.objects.get(id=sid)
-            s.s_name = s_name
-            s.g = g
-            s.save()
-        return redirect('stu:student')
+    s_name = request.POST.get('stu_name')
+    g_id = request.POST.get('g_id')
+    s_img = request.FILES.get('s_img')
+    g = Grade.objects.filter(id=g_id).first()
+    if sid == 0:
+        Student.objects.create(s_name=s_name, g=g, s_img=s_img)
+    else:
+        s = Student.objects.get(id=sid)
+        s.s_name = s_name
+        s.g = g
+        s.save()
+    return redirect('stu:student')
 
 
 def del_stu(request, sid):

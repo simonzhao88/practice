@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from stu import views
 
+
 urlpatterns = [
     url(r'^index/', views.index, name='index'),
     url(r'^head/', views.head, name='head'),
@@ -14,4 +15,5 @@ urlpatterns = [
     url(r'^delgrade/(\d+)', views.del_grade, name='delgrade'),
     url(r'^editstu/(\d+)', views.add_stu, name='editstu'),
     url(r'^delstu/(\d+)', views.del_stu, name='delstu'),
+
 ]

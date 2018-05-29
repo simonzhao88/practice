@@ -54,9 +54,9 @@
         <div class="form_boxC">
             <p>"<span class="f_cB">*</span>"号为必填项目</p>
             {% if stu.id %}
-                <form action="{% url 'stu:addstu' stu.id %}" method="post">
+                <form action="{% url 'stu:addstu' stu.id %}" method="post" enctype="multipart/form-data">
             {% else %}
-                <form action="{% url 'stu:addstu' 0 %}" method="post">
+                <form action="{% url 'stu:addstu' 0 %}" method="post" enctype="multipart/form-data">
             {% endif %}
             {% csrf_token %}
             <table cellpadding="0" cellspacing="0">
@@ -85,6 +85,14 @@
                 {#                            </div>#}
                 {#                            <!-- /selectbox --></td>#}
                 {#                    </tr>#}
+            <tr>
+                <th>头像</th>
+                <td>
+                     <div class="txtbox floatL" style="width:140px;">
+                         <input type="file" name="s_img">
+                     </div>
+                </td>
+            </tr>
                 <tr>
                     <th>所属班级<span class="f_cB">*</span></th>
                     <td><!-- selectbox -->

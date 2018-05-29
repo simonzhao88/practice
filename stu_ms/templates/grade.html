@@ -38,7 +38,8 @@
                     <td>{{ grade.id }}</td>
                     <td>{{ grade.g_name }}</td>
                     <td>{{ grade.g_create_time|date:'Y-m-d h:m:s' }}</td>
-                    <td><a href="{% url 'stu:editgrade' grade.id %}">编辑</a> | <a href="{% url 'stu:delgrade' grade.id %}">删除</a></td>
+                    <td><a href="{% url 'stu:editgrade' grade.id %}">编辑</a> | <a
+                            href="{% url 'stu:delgrade' grade.id %}">删除</a></td>
                 </tr>
             {% endfor %}
 
@@ -52,11 +53,15 @@
             <li><a href="{% url 'stu:grade' %}?page_num={{ pages.previous_page_number }}">上一页</a></li>
         {% endif %}
         {% for i in pages.paginator.page_range %}
-            <li><a href="{% url 'stu:grade' %}?page_num={{ i }}">{{ i }}</a></li>
+            {% ifequal pages.number i %}
+                <li><a href="{% url 'stu:grade' %}?page_num={{ i }}" class="active">{{ i }}</a></li>
+            {% else %}
+                <li><a href="{% url 'stu:grade' %}?page_num={{ i }}">{{ i }}</a></li>
+            {% endifequal %}
         {% endfor %}
-    {% if pages.has_next %}
-    <li><a href="{% url 'stu:grade' %}?page_num={{ pages.next_page_number }}">下一页</a></li>
-    {% endif %}
+        {% if pages.has_next %}
+            <li><a href="{% url 'stu:grade' %}?page_num={{ pages.next_page_number }}">下一页</a></li>
+        {% endif %}
         <li><a href="{% url 'stu:grade' %}?page_num={{ pages.paginator.num_pages }}">尾页</a></li>
     </ul>
 
