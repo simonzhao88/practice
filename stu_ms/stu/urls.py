@@ -8,12 +8,12 @@ urlpatterns = [
     url(r'^left/', views.left, name='left'),
     url(r'^main/', views.main, name='main'),
     url(r'^grade/', views.grade, name='grade'),
-    url(r'^addgrade/(\d+)', views.add_grade, name='addgrade'),
+    url(r'^addgrade/', views.add_grade, name='addgrade'),
     url(r'^student/', views.student, name='student'),
-    url(r'^addstu/(\d+)', views.add_stu, name='addstu'),
-    url(r'^editgrade/(\d+)', views.add_grade, name='editgrade'),
-    url(r'^delgrade/(\d+)', views.del_grade, name='delgrade'),
-    url(r'^editstu/(\d+)', views.add_stu, name='editstu'),
-    url(r'^delstu/(\d+)', views.del_stu, name='delstu'),
+    url(r'^addstu/', views.add_stu, name='addstu'),
+    url(r'^editgrade/', views.add_grade, name='editgrade'),
+    url(r'^delgrade/', views.del_grade, name='delgrade'),
+    url(r'^editstu/', views.add_stu, name='editstu'),
+    url(r'^delstu/', views.del_stu, name='delstu'),
 
 ]

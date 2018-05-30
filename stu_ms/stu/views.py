@@ -1,9 +1,10 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
-
+from utils.check_login import is_login
 from stu.models import Grade, Student
 
 
+@is_login
 def index(request):
     """
     首页
@@ -14,6 +15,7 @@ def index(request):
         return render(request, 'index.html')
 
 
+@is_login
 def head(request):
     """
     首页头部
@@ -24,6 +26,7 @@ def head(request):
         return render(request, 'head.html')
 
 
+@is_login
 def left(request):
     """
     首页左部
@@ -39,6 +42,7 @@ def main(request):
         return render(request, 'main.html')
 
 
+@is_login
 def grade(request):
     """
     首页grade页面
@@ -57,15 +61,15 @@ def grade(request):
         return render(request, 'grade.html', context=ctx)
 
 
-def add_grade(request, gid=0):
+@is_login
+def add_grade(request):
     """
     渲染班级添加页面及实现添加班级
     修改班级页面渲染及实现修改班级
     :param request:
-    :param gid:
     :return:
     """
-    gid = int(gid)
+    gid = int(request.GET.get('id'))
     if request.method == 'GET':
         if gid == 0:
             return render(request, 'addgrade.html')
@@ -87,18 +91,20 @@ def add_grade(request, gid=0):
     # 若是HttpResponseRedirect则要导入reverse()方法
 
 
-def del_grade(request, gid):
+@is_login
+def del_grade(request):
     """
     实现删除班级
     :param request:
-    :param gid:
     :return:
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        gid = request.GET.get('id')
         Grade.objects.filter(id=gid).delete()
         return redirect('stu:grade')
 
 
+@is_login
 def student(request):
     """
     学生界面
@@ -117,13 +123,14 @@ def student(request):
         return render(request, 'student.html', context=ctx)
 
 
-def add_stu(request, sid):
+@is_login
+def add_stu(request):
     """
     渲染添加学生页面及实现添加学生
     :param request:
     :return:
     """
-    sid = int(sid)
+    sid = int(request.GET.get('id'))
     if request.method == 'GET':
         if sid == 0:
             ctx = {
@@ -145,17 +152,19 @@ def add_stu(request, sid):
         s = Student.objects.get(id=sid)
         s.s_name = s_name
         s.g = g
+        s.s_img = s_img
         s.save()
     return redirect('stu:student')
 
 
-def del_stu(request, sid):
+@is_login
+def del_stu(request):
     """
     实现删除学生
     :param request:
-    :param sid:
     :return:
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        sid = request.GET.get('id')
         Student.objects.filter(id=sid).delete()
         return redirect('stu:student')

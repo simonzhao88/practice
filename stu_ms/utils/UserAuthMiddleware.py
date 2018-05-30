@@ -25,7 +25,7 @@ class UserAuthMiddle(MiddlewareMixin):
         if not ticket:
             return redirect('user:login')
 
-        user = Users.objects.filter(ticket=ticket)
+        user = Users.objects.filter(ticket=ticket).first()
         if not user:
             return redirect('user:login')
 

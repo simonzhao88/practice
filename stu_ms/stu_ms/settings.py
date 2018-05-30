@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 自定义中间件完成登录验证功能
-    'utils.UserAuthMiddleware.UserAuthMiddle',
+    # 'utils.UserAuthMiddleware.UserAuthMiddle',
 ]
 
 ROOT_URLCONF = 'stu_ms.urls'
@@ -134,4 +134,4 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 没有登录跳转地址
-LOGIN_URL = '/user/login/'
+# LOGIN_URL = '/user/login/'

@@ -1,11 +1,11 @@
 import random
 
 from django.contrib import auth
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from .models import Users
+from .models import Users, Role
 
 """django自带的登录注册"""
 
@@ -30,7 +30,6 @@ def djregister(request):
     if pwd1 != pwd2:
         msg = '两次密码不一致'
         return render(request, 'register.html', {'msg': msg})
-
     User.objects.create_user(username=username, password=pwd1)
     return redirect('user:djlogin')
 
@@ -44,9 +43,9 @@ def djlogin(request):
     if request.method == 'GET':
         return render(request, 'login.html')
     username = request.POST.get('username')
-    password = request.POST.get('password')
+    pwd = request.POST.get('password')
     # 返回验证成功的信息，验证失败则为空
-    user = auth.authenticate(username=username, password=password)
+    user = auth.authenticate(username=username, password=pwd)
 
     if user:
         # 注册
@@ -85,9 +84,9 @@ def register(request):
     if pwd1 != pwd2:
         msg = '两次密码必须一致'
         return render(request, 'register.html', {'msg': msg})
-    # password = make_password(password=pwd1)
+    password = make_password(password=pwd1)
 
-    Users.objects.create(username=username, password=pwd1)
+    Users.objects.create(username=username, password=password)
     return redirect('user:login')
 
 
@@ -95,11 +94,10 @@ def login(request):
     if request.method == 'GET':
         return render(request, 'login.html')
     username = request.POST.get('username')
-    password = request.POST.get('password')
+    pwd = request.POST.get('password')
 
-    user = Users.objects.filter(username=username,
-                                password=password).first()
-    if user:
+    user = Users.objects.filter(username=username).first()
+    if user and check_password(pwd, user.password):
         # 先产生随机的字符串，长度28
         s = 'abcdefghijklmnopqrstuvwxyz1234567890'
         ticket = ''
@@ -125,3 +123,13 @@ def logout(request):
         response = redirect('user:login')
         response.delete_cookie('ticket')
         return response
+
+
+def userper(request):
+    if request.method == 'GET':
+        # 查询妲己以后哪些权限
+        u_r_p = Users.objects.filter(username='小妲己').first().role.r_p.all()
+
+        # 判断妲己是否有学生列表权限
+        u_r_p.filter(p_en='STUDENTLIS').exist()
+    return '123'
