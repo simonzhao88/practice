@@ -1,10 +1,12 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
+
+from stu.serializer import StudentSerializer, GradeSerializer
 from utils.check_login import is_login
 from stu.models import Grade, Student
+from rest_framework import mixins, viewsets
 
 
-@is_login
 def index(request):
     """
     首页
@@ -15,7 +17,6 @@ def index(request):
         return render(request, 'index.html')
 
 
-@is_login
 def head(request):
     """
     首页头部
@@ -26,7 +27,6 @@ def head(request):
         return render(request, 'head.html')
 
 
-@is_login
 def left(request):
     """
     首页左部
@@ -42,7 +42,6 @@ def main(request):
         return render(request, 'main.html')
 
 
-@is_login
 def grade(request):
     """
     首页grade页面
@@ -61,7 +60,6 @@ def grade(request):
         return render(request, 'grade.html', context=ctx)
 
 
-@is_login
 def add_grade(request):
     """
     渲染班级添加页面及实现添加班级
@@ -91,7 +89,6 @@ def add_grade(request):
     # 若是HttpResponseRedirect则要导入reverse()方法
 
 
-@is_login
 def del_grade(request):
     """
     实现删除班级
@@ -104,7 +101,6 @@ def del_grade(request):
         return redirect('stu:grade')
 
 
-@is_login
 def student(request):
     """
     学生界面
@@ -113,7 +109,7 @@ def student(request):
     """
     if request.method == 'GET':
         page_num = request.GET.get('page_num', 1)
-        stus = Student.objects.all()
+        stus = Student.objects.filter(delete=0)
         paginator = Paginator(stus, 3)
         pages = paginator.page(int(page_num))
         ctx = {
@@ -123,7 +119,6 @@ def student(request):
         return render(request, 'student.html', context=ctx)
 
 
-@is_login
 def add_stu(request):
     """
     渲染添加学生页面及实现添加学生
@@ -157,7 +152,6 @@ def add_stu(request):
     return redirect('stu:student')
 
 
-@is_login
 def del_stu(request):
     """
     实现删除学生
@@ -168,3 +162,40 @@ def del_stu(request):
         sid = request.GET.get('id')
         Student.objects.filter(id=sid).delete()
         return redirect('stu:student')
+
+
+class ApiStudent(mixins.ListModelMixin, mixins.CreateModelMixin,
+                 mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
+                 mixins.UpdateModelMixin, viewsets.GenericViewSet,):
+
+    # 学生的所有信息
+    queryset = Student.objects.all().filter(delete=False)
+    # 序列化学生的所有信息（过滤）
+    serializer_class = StudentSerializer
+
+    def perform_destroy(self, instance):
+        """
+        重写删除方法，使成为软删除
+        :param instance:
+        :return:
+        """
+        instance.delete = True
+        instance.save()
+
+
+class ApiGrade(mixins.ListModelMixin, mixins.CreateModelMixin,
+               mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
+               mixins.UpdateModelMixin, viewsets.GenericViewSet,):
+
+    queryset = Grade.objects.filter(delete=False)
+
+    serializer_class = GradeSerializer
+
+    def perform_destroy(self, instance):
+        """
+        重写删除方法，使成为软删除
+        :param instance:
+        :return:
+        """
+        instance.delete = True
+        instance.save()

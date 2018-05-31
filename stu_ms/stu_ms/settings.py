@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'stu',
     'user',
+    'mytest',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -50,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 自定义中间件完成登录验证功能
-    # 'utils.UserAuthMiddleware.UserAuthMiddle',
+    'utils.UserAuthMiddleware.UserAuthMiddle',
 ]
 
 ROOT_URLCONF = 'stu_ms.urls'
@@ -135,3 +137,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 没有登录跳转地址
 # LOGIN_URL = '/user/login/'
+
+
+# rest分页配置
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 3,
+    'DEFAULT_AUTHENTICATION_CLASSES': ()
+}

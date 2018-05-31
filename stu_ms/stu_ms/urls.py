@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^stu/', include('stu.urls', namespace='stu')),
     url(r'^user/', include('user.urls', namespace='user')),
+    url(r'^mytest/', include('mytest.urls', namespace='mytest'))
 ]
 
 urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)

@@ -122,12 +122,15 @@ def logout(request):
     if request.method == 'GET':
         response = redirect('user:login')
         response.delete_cookie('ticket')
+        user = Users.objects.filter(username=request.user).first()
+        user.ticket = ''
+        user.save()
         return response
 
 
 def userper(request):
     if request.method == 'GET':
-        # 查询妲己以后哪些权限
+        # 查询妲己拥有哪些权限
         u_r_p = Users.objects.filter(username='小妲己').first().role.r_p.all()
 
         # 判断妲己是否有学生列表权限

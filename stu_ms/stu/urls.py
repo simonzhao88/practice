@@ -2,6 +2,13 @@ from django.conf.urls import url
 from stu import views
 
 
+from rest_framework.routers import SimpleRouter
+
+router = SimpleRouter()
+# 注册rest路由
+router.register(r'^api/student', views.ApiStudent)
+router.register(r'^api/grade', views.ApiGrade)
+
 urlpatterns = [
     url(r'^index/', views.index, name='index'),
     url(r'^head/', views.head, name='head'),
@@ -17,3 +24,6 @@ urlpatterns = [
     url(r'^delstu/', views.del_stu, name='delstu'),
 
 ]
+
+# 使定义的rest风格的url生效
+urlpatterns += router.urls
