@@ -27,3 +27,5 @@ urlpatterns = [
 
 # 使定义的rest风格的url生效
 urlpatterns += router.urls
+
+# handler404 = views.badpage404

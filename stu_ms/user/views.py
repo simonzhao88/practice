@@ -122,9 +122,9 @@ def logout(request):
     if request.method == 'GET':
         response = redirect('user:login')
         response.delete_cookie('ticket')
-        user = Users.objects.filter(username=request.user).first()
-        user.ticket = ''
-        user.save()
+        # user = Users.objects.filter(username=request.user).first()
+        # user.ticket = ''
+        # user.save()
         return response
 
 

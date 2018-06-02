@@ -37,8 +37,7 @@
         $(function () {
             $.get('/stu/api/grade/', function (msg) {
                 var tr_html = '';
-                console.log(msg);
-                var msg = msg['results'];
+                var msg = msg['data']['results'];
                 for (var i=0; i < msg.length; i++){
                     tr_html += '<tr>';
                     tr_html += '<td>' + msg[i]['id'] + '</td>';

@@ -39,9 +39,8 @@
         
         $(function () {
             $.get('/stu/api/student/', function (msg) {
-                console.log(msg);
                 var tr_html = '';
-                var msg = msg['results'];
+                var msg = msg['data']['results'];
                 for (var i=0; i< msg.length; i++){
                     {#alert(msg[i]);#}
                     tr_html += '<tr>';

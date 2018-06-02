@@ -1,10 +1,14 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
+from rest_framework.response import Response
 
+from stu.filters import StudentFilter
 from stu.serializer import StudentSerializer, GradeSerializer
 from utils.check_login import is_login
 from stu.models import Grade, Student
 from rest_framework import mixins, viewsets
+import logging
+logger = logging.getLogger('console')
 
 
 def index(request):
@@ -14,6 +18,7 @@ def index(request):
     :return:
     """
     if request.method == 'GET':
+        logger.info('获取到了首页')
         return render(request, 'index.html')
 
 
@@ -48,16 +53,17 @@ def grade(request):
     :param request:
     :return:
     """
-    if request.method == 'GET':
-        page_num = request.GET.get('page_num', 1)
-        grades = Grade.objects.all()
-        paginator = Paginator(grades, 3)
-        pages = paginator.page(int(page_num))
-        ctx = {
-            'pages': pages,
-            'page_num': page_num
-        }
-        return render(request, 'grade.html', context=ctx)
+    # if request.method == 'GET':
+    #     page_num = request.GET.get('page_num', 1)
+    #     grades = Grade.objects.all()
+    #     paginator = Paginator(grades, 3)
+    #     pages = paginator.page(int(page_num))
+    #     ctx = {
+    #         'pages': pages,
+    #         'page_num': page_num
+    #     }
+    #     return render(request, 'grade.html', context=ctx)
+    return render(request, 'grade.html')
 
 
 def add_grade(request):
@@ -67,25 +73,27 @@ def add_grade(request):
     :param request:
     :return:
     """
-    gid = int(request.GET.get('id'))
+    # gid = int(request.GET.get('id'))
+    # if request.method == 'GET':
+    #     if gid == 0:
+    #         return render(request, 'addgrade.html')
+    #     else:
+    #         ctx = {
+    #             'grade': Grade.objects.get(id=gid)
+    #         }
+    #         return render(request, 'addgrade.html', context=ctx)
+    # g_name = request.POST.get('grade_name')
+    # if gid == 0:
+    #     g = Grade()
+    #     g.g_name = g_name
+    #     g.save()
+    # else:
+    #     g = Grade.objects.filter(id=gid).first()
+    #     g.g_name = g_name
+    #     g.save()
+    # return redirect('stu:grade')
     if request.method == 'GET':
-        if gid == 0:
-            return render(request, 'addgrade.html')
-        else:
-            ctx = {
-                'grade': Grade.objects.get(id=gid)
-            }
-            return render(request, 'addgrade.html', context=ctx)
-    g_name = request.POST.get('grade_name')
-    if gid == 0:
-        g = Grade()
-        g.g_name = g_name
-        g.save()
-    else:
-        g = Grade.objects.filter(id=gid).first()
-        g.g_name = g_name
-        g.save()
-    return redirect('stu:grade')
+        return render(request, 'addgrade.html')
     # 若是HttpResponseRedirect则要导入reverse()方法
 
 
@@ -107,16 +115,17 @@ def student(request):
     :param request:
     :return:
     """
-    if request.method == 'GET':
-        page_num = request.GET.get('page_num', 1)
-        stus = Student.objects.filter(delete=0)
-        paginator = Paginator(stus, 3)
-        pages = paginator.page(int(page_num))
-        ctx = {
-            'pages': pages,
-            'page_num': page_num
-        }
-        return render(request, 'student.html', context=ctx)
+    # if request.method == 'GET':
+    #     page_num = request.GET.get('page_num', 1)
+    #     stus = Student.objects.filter(delete=0)
+    #     paginator = Paginator(stus, 3)
+    #     pages = paginator.page(int(page_num))
+    #     ctx = {
+    #         'pages': pages,
+    #         'page_num': page_num
+    #     }
+    #     return render(request, 'student.html', context=ctx)
+    return render(request, 'student.html')
 
 
 def add_stu(request):
@@ -172,6 +181,8 @@ class ApiStudent(mixins.ListModelMixin, mixins.CreateModelMixin,
     queryset = Student.objects.all().filter(delete=False)
     # 序列化学生的所有信息（过滤）
     serializer_class = StudentSerializer
+    # 配置过滤规则
+    filter_class = StudentFilter
 
     def perform_destroy(self, instance):
         """
@@ -181,6 +192,12 @@ class ApiStudent(mixins.ListModelMixin, mixins.CreateModelMixin,
         """
         instance.delete = True
         instance.save()
+
+    def get_queryset(self):
+
+        # query = self.queryset
+        # s_name = self.request.query_params.get('s_name')
+        return self.queryset.order_by('-id')
 
 
 class ApiGrade(mixins.ListModelMixin, mixins.CreateModelMixin,
@@ -199,3 +216,25 @@ class ApiGrade(mixins.ListModelMixin, mixins.CreateModelMixin,
         """
         instance.delete = True
         instance.save()
+
+    def update(self, request, *args, **kwargs):
+        """
+        重写update方法完成修改，其他方法也是如此
+        自定义code状态码和msg消息
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        instance = self.get_object()
+        serializer = self.serializer_class(instance, request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.do_update(instance, request.data)
+        data = serializer.data
+        data['code'] = 200
+        data['msg'] = '修改班级成功'
+        return Response(data)
+
+
+def badpage404(request):
+    return render(request, '404.html')

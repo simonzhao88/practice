@@ -1,3 +1,8 @@
+"""
+功能：练习测试ORM查询
+author：simon
+"""
+
 from django.db.models import Q, F
 from django.shortcuts import render
 

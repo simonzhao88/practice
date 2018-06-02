@@ -1,3 +1,8 @@
+"""
+功能：登录验证装饰器
+author：simon
+"""
+
 from django.shortcuts import redirect
 
 from user.models import Users

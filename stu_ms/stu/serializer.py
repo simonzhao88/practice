@@ -1,4 +1,7 @@
-import time
+"""
+功能：继承序列化类，自定义序列化格式
+author：simon
+"""
 
 from rest_framework import serializers
 
@@ -44,4 +47,16 @@ class GradeSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['g_create_time'] = instance.g_create_time.strftime("%Y-%m-%d %H:%M:%S")
 
+        return data
+
+    def do_update(self, instance, data):
+        """
+        将数据保存到数据库，实现持久化存储
+        :param instance:
+        :param data:
+        :return:
+        """
+        instance.g_name = data['g_name']
+        instance.save()
+        # data = self.to_representation(instance)
         return data

@@ -1,0 +1,6 @@
+Django==1.11
+django-filter==1.1.0
+djangorestframework==3.4.4
+Pillow==5.1.0
+PyMySQL==0.8.1
+pytz==2018.4
