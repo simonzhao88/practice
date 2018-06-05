@@ -93,7 +93,7 @@ class Goods(models.Model):
     childcid = models.CharField(max_length=16)   # 子分类id
     childcidname = models.CharField(max_length=100)  # 名称
     dealerid = models.CharField(max_length=16)
-    storenums = models.IntegerField(default=1)  # 排序
+    storenums = models.IntegerField(default=1)  # 库存
     productnum = models.IntegerField(default=1)   # 销量排序
 
     class Meta:

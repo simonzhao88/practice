@@ -1,12 +1,12 @@
 import datetime
 import json
-import random
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from user.models import UserTicketModel
+from utils.toolfuncs import get_ticket
 from xfmart.models import UserModel
 
 
@@ -21,9 +21,14 @@ def register(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
-        password = make_password(request.POST.get('password'))
+        password = request.POST.get('password')
+        sex = request.POST.get('sex')
         icon = request.FILES.get('icon')
-        UserModel.objects.create(username=username, email=email, password=password, icon=icon)
+        if not all([username, email, password, icon]):
+            pass
+        username = make_password(password)
+        UserModel.objects.create(username=username, email=email,
+                                 password=password, sex=sex, icon=icon)
         return redirect('user:login')
 
 
@@ -51,13 +56,10 @@ def login(request):
         user = UserModel.objects.filter(username=username).first()
         out_time = datetime.datetime.now() + datetime.timedelta(days=7)
         if user and check_password(password, user.password):
-            s = 'abcdefghijklmnopqrstuvwxyz1234567890_*='
-            ticket = ''
-            for i in range(28):
-                ticket += random.choice(s)
+            ticket = get_ticket()
             UserTicketModel.objects.create(ticket=ticket, out_time=out_time, user_id=user.id)
             response = redirect('xf:mine')
-            response.set_cookie('ticket', ticket)
+            response.set_cookie('ticket', ticket, expires=out_time)
             return response
         else:
             msg = '用户名或密码错误'
@@ -74,6 +76,5 @@ def logout(request):
         response = redirect('user:login')
         ticket = request.COOKIES['ticket']
         response.delete_cookie('ticket')
-        UserTicketModel.objects.filter(ticket=ticket).delete()
+        # UserTicketModel.objects.filter(ticket=ticket).delete()
         return response
-

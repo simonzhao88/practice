@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.db.models import Q
 from django.shortcuts import redirect
 from django.utils.deprecation import MiddlewareMixin
 
@@ -19,16 +20,23 @@ class UserAuthMiddle(MiddlewareMixin):
         # return None 或者不写return
 
         path = request.path
-        pdir = ['/user/login', '/user/register/']
-        if path in pdir:
+        need_login = ['/xf/mine/', '/xf/cart/']   # 需要登录的页面
+        if path not in need_login:
             return None
 
         ticket = request.COOKIES.get('ticket')
         if not ticket:
             return redirect('user:login')
-
-        user = UserTicketModel.objects.filter(ticket=ticket).filter(out_time__gt=datetime.now()).first()
-        if not user:
-            return redirect('user:login')
-
-        request.user = user
+        user_ticket = UserTicketModel.objects.filter(ticket=ticket).first()
+        if user_ticket:
+            # 获取到有认证的相关信息
+            # 1.验证当前认证信息是否过期，如果没过期， request.user赋值
+            # 2.如果过期，跳转到登录，并删除认证信息
+            if datetime.utcnow() > user_ticket.out_time.replace(tzinfo=None):
+                # 过期
+                UserTicketModel.objects.filter(user=user_ticket.user).delete()
+                return redirect('user:login')
+            else:
+                # 没过期  request.user赋值
+                request.user = user_ticket.user
+                UserTicketModel.objects.filter(Q(user=user_ticket.user) & ~Q(ticket=ticket)).delete()

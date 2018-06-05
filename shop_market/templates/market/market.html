@@ -19,12 +19,15 @@
             <ul>
 
                 <!--闪购分类展示-->
+                {% for types in foodtypes %}
                     <li>
                         <!--链接地址，点击获取分类下的商品信息-->
-                        <a href=""></a>
-                            <span class="yellowSlide"></span>
-
+                        <a href="{% url 'xf:market_param' types.typeid 0 0 %}">{{ types.typename }}</a>
+                        {% ifequal types.typeid typeid %}
+                        <span class="yellowSlide"></span>
+                        {% endifequal %}
                     </li>
+                {% endfor %}
                 <!--处理数据结束-->
 
             </ul>
@@ -45,21 +48,22 @@
                 <ul>
 
                     <!--商品信息展示-->
+                    {% for gds in goods %}
                         <li>
                             <a href="#">
-                                <img src="" alt="">
+                                <img src="{{ gds.productimg }}" alt="{{ gds.productname }}">
                                 <div class="shoppingInfo">
-                                    <h6></h6>
+                                    <h6>{{ gds.productlongname }}</h6>
                                     <p class="detailTag">
                                         <span>精选</span>
-                                        <span></span>
+                                        <span>{{ gds.childcidname }}</span>
                                     </p>
                                     <p class="unit">
-
+                                        {{ gds.specifics }}
                                     </p>
                                     <p class="price">
-                                        <span>¥</span>
-                                        <s>¥</s>
+                                        <span>¥{{ gds.price }}</span>
+                                        <s>¥{{ gds.marketprice }}</s>
                                     </p>
                                 </div>
                             </a>
@@ -69,18 +73,19 @@
                             <button goodsid="" class="addShopping">+</button>
                         </section>
                         </li>
+                    {% endfor %}
                     <!--处理数据结束-->
                 </ul>
 
                 <div id="all_types_container">
                     <div>
                         <!--加载全部分类的数据-->
-                            <a href="">
-                                <span></span>
+                        {% for child in childs %}
+                            <a href="{% url 'xf:market_param' typeid child.1 0 %}">
+                                <span>{{ child.0 }}</span>
                             </a>
+                        {% endfor %}
                         <!--处理数据结束-->
-
-
                     </div>
                 </div>
 
@@ -88,16 +93,16 @@
                 <div id="sort_container">
                     <div>
 {#      排序传递的也是状态码   0 , 1 ,2  , 3 ,4 ,5...                    #}
-                        <a href="">
+                        <a href="{% url 'xf:market_param' typeid cid 0 %}">
                             <span>综合排序</span>
                         </a>
-                        <a href="">
+                        <a href="{% url 'xf:market_param' typeid cid 1 %}">
                             <span>销量排序</span>
                         </a>
-                        <a href="">
+                        <a href="{% url 'xf:market_param' typeid cid 2 %}">
                             <span>价格降序</span>
                         </a>
-                        <a href="">
+                        <a href="{% url 'xf:market_param' typeid cid 3 %}">
                             <span>价格升序</span>
                         </a>
 

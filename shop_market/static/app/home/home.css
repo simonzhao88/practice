@@ -180,12 +180,13 @@ footer .home span {
 }
 
 .mainInfo > section h3 > span {
-    background-color: yellow;
-    width: 0.6rem;
-    height: 0.1rem;
+    /*background-color: yellow;*/
+    border-left: .3rem yellow solid;
+    width: 3rem;
+    height: 0.6rem;
     position: absolute;
     bottom: 0.25rem;
-    left: 4.3rem;
+    left: 0;
 }
 
 .mainInfo > section > div > a > img {
