@@ -26,11 +26,11 @@ $(function () {
     $("#sort_container").click(function () {
         $(this).hide();
         $("#sort_rule_logo").addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-up");
-    })
+    })})
 
 
 //    添加商品到购物车
-    $(".addShopping").click(function () {
+/*    $(".addShopping").click(function () {
         //    拿到商品id发送给服务器
         var addShop = $(this);
         var goodsid = $(this).attr("goodsid");
@@ -81,3 +81,4 @@ $(function () {
 
 
 })
+*///

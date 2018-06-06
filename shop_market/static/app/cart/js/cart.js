@@ -2,16 +2,17 @@
 $(function () {
 
 
-    $(".is_choose").click(function () {
+    /*$(".is_choose").click(function () {
         console.log("点击");
         var current_li = $(this);
         var cart_id = current_li.parents("li").attr("cartid");
         console.log(cart_id);
 
-        $.getJSON("/axf/changecartstatus/", {"cart_id":cart_id}, function (data) {
+        $.getJSON("/xf/changeCartStatus/", {"cart_id":cart_id}, function (data) {
             console.log(data);
-            if (data["status"] == "200"){
+            if (data["code"] == "200"){
                 if (data["check"]){
+                    var span = current_li.find("span");
                     var span = current_li.find("span");
                     span.html("√");
 
@@ -19,7 +20,7 @@ $(function () {
                         $("#all_select").find("span").html("<span>√</span>");
                     }
 
-                }else{
+                }else {
                     var span = current_li.find("span");
                     span.html("");
                     $("#all_select").find("span").html("<span></span>");
@@ -27,9 +28,8 @@ $(function () {
                 current_li.attr("is_select",data["check"]);
             }
         })
-    })
-
-
+    })*/
+    /*
     $(".subShopping").click(function () {
         // 代表记住我们这一样  真实是点击的button
         var current_li = $(this);
@@ -64,8 +64,8 @@ $(function () {
 
     })
 
-
-    $("#all_select").click(function () {
+*/
+    /*$("#all_select").click(function () {
 
     //    如果有未选中的，应该执行操作是全部选中
     //    并且让自己的按钮变成选中状态
@@ -87,8 +87,9 @@ $(function () {
 
         if (not_selects.length == 0){
             console.log("全都变成未选中");
+            alert(selects.join("#"))
 
-            $.getJSON("/axf/changecartselect/",{"selects": selects.join("#"),"action":"unselect"}, function (data) {
+            $.getJSON("/xf/changeCartStatus/",{"selects": selects.join("#"),"action":"unselect"}, function (data) {
                 console.log(data);
                 if (data["status"] == "200"){
                     var selects = data["selects"];
@@ -104,7 +105,7 @@ $(function () {
 
         }else{
             console.log("全部变成选中");
-            $.getJSON("/axf/changecartselect/",{"selects": not_selects.join("#"), "action":"select"}, function (data) {
+            $.getJSON("/xf/changeCartStatus/",{"selects": not_selects.join("#"), "action":"select"}, function (data) {
                 console.log(data);
                 if(data["status"] == "200"){
                     var selects = data["selects"];
@@ -122,7 +123,8 @@ $(function () {
         }
 
     })
-
+*/
+    /*
     $("#generate_order").click(function () {
 
 
@@ -161,6 +163,6 @@ $(function () {
 
     })
 
-
+*/
 
 })

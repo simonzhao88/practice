@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from user.models import UserTicketModel
+from utils.toolfuncs import get_order_random_id
 from .models import MainWheel, MainNav, MainMustbuy, MainShop, \
-    MainShow, Goods, FoodType
-from django.http import HttpResponseRedirect
+    MainShow, Goods, FoodType, CartModel, OrderModel, OrderGoodsModel
+from django.http import HttpResponseRedirect, JsonResponse
 
 
 def index(request):
@@ -87,7 +88,14 @@ def cart(request):
     :param request:
     :return:
     """
-    return render(request, 'cart/cart.html')
+    if request.method == 'GET':
+        user = request.user
+        if user.id:
+            carts = CartModel.objects.filter(user=user)
+            ctx = {
+                'carts': carts
+            }
+        return render(request, 'cart/cart.html', context=ctx)
 
 
 def mine(request):
@@ -103,3 +111,150 @@ def mine(request):
         except AttributeError:
             user = None
         return render(request, 'mine/mine.html', {'user': user, 'title': '个人中心'})
+
+
+def add_cart(request):
+    """
+    添加商品到购物车
+    :param request:
+    :return:
+    """
+    if request.method == 'POST':
+        user = request.user
+        goods_id = request.POST.get('goods_id')
+        data = {
+            'code': 200,
+            'msg': '请求成功'
+        }
+        # 判断用户是否是系统自带的anonymouseuser还是登陆的用户
+        if user.id:
+            user_cart = CartModel.objects.filter(user_id=user.id,
+                                                 goods_id=goods_id).first()
+
+            if user_cart:
+                user_cart.c_num += 1
+                user_cart.save()
+                data['c_num'] = user_cart.c_num
+            else:
+                CartModel.objects.create(user=user,
+                                         goods_id=goods_id)
+                data['c_num'] = 1
+            return JsonResponse(data)
+        data['msg'] = '您还未登陆，请去登陆~'
+        data['code'] = 403
+
+        return JsonResponse(data)
+
+
+def sub_cart(request):
+    """
+    删除商品到购物车
+    :param request:
+    :return:
+    """
+    if request.method == 'POST':
+        user = request.user
+        goods_id = request.POST.get('goods_id')
+        data = {
+            'code': 200,
+            'msg': '请求成功'
+        }
+        # 判断用户是否是系统自带的anonymouseuser还是登陆的用户
+        if user.id:
+            user_cart = CartModel.objects.filter(user_id=user.id,
+                                                 goods_id=goods_id).first()
+
+            if user_cart:
+                if user_cart.c_num == 1:
+                    user_cart.delete()
+                    data['c_num'] = 0
+                else:
+                    user_cart.c_num -= 1
+                    user_cart.save()
+                    data['c_num'] = user_cart.c_num
+            else:
+                data['code'] = 400
+                data['msg'] = '购物车没有这件商品'
+            return JsonResponse(data)
+        data['msg'] = '您还未登陆，请去登陆~'
+        data['code'] = 403
+
+        return JsonResponse(data)
+
+
+def goods_num(request):
+    """
+    显示闪购页面用户加入购物车商品的数量
+    :param request:
+    :return:
+    """
+    if request.method == 'POST':
+        user = request.user
+        goods_id = request.POST.get('goods_id')
+        data = {
+            'code': 200,
+            'msg': '请求成功'
+        }
+        # 判断用户是否是系统自带的anonymouseuser还是登陆的用户
+        if user.id:
+            user_cart = CartModel.objects.filter(user_id=user.id,
+                                                 goods_id=goods_id).first()
+
+            if user_cart:
+                data['c_num'] = user_cart.c_num
+        return JsonResponse(data)
+
+
+def change_status(request):
+    """
+    修改购物车商品选择状态
+    :param request:
+    :return:
+    """
+    data = {
+        'code': 200,
+        'msg': '请求成功'
+    }
+    if request.method == 'POST':
+        cart_id = request.POST.get('cart_id')
+        cart = CartModel.objects.filter(id=cart_id).first()
+        is_select = request.POST.get('isselect')
+        if not is_select:
+            if cart.is_select:
+                cart.is_select = False
+                data['check'] = cart.is_select
+            else:
+                cart.is_select = True
+                data['check'] = cart.is_select
+        elif is_select == '1':
+            cart.is_select = True
+        else:
+            cart.is_select = False
+
+        cart.save()
+    return JsonResponse(data)
+
+
+def generate_order(request):
+    """
+    下单
+    :param request:
+    :return:
+    """
+    if request.method == 'GET':
+        user = request.user
+
+        o_num = get_order_random_id()
+        OrderModel.objects.create(user=user, o_num=o_num)
+        order = OrderModel.objects.filter(o_num=o_num).first()
+        user_carts = CartModel.objects.filter(user=user, is_select=True)
+        for cart in user_carts:
+            goods = cart.goods
+            goods_num = cart.c_num
+            OrderGoodsModel.objects.create(goods=goods, order=order, goods_num=goods_num)
+            cart.delete()
+        ctx = {
+            'o_num': o_num,
+            'carts': user_carts,
+        }
+    return render(request, 'order/order_info.html', context=ctx)

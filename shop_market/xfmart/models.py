@@ -114,7 +114,7 @@ class CartModel(models.Model):
 class OrderModel(models.Model):
     """订单表"""
     user = models.ForeignKey(UserModel)   # 关联用户
-    o_num = models.CharField(max_length=64)  # 订单数量
+    o_num = models.CharField(max_length=64)  # 订单编号
     # 0 表示已下单，但未付款， 1 已付款未发货， 2 已付款已发货
     o_status = models.IntegerField(default=0)   # 状态
     o_create = models.DateTimeField(auto_now_add=True)  # 创建时间

@@ -7,6 +7,7 @@
 
 {% block EXTJS %}
     <script type="text/javascript" src="{% static 'app/market/js/market.js' %}"></script>
+    <script type="text/javascript" src="{% static 'app/cart/comment/functions.js' %}"></script>
 {% endblock %}
 
 
@@ -17,6 +18,7 @@
         <aside>
 
             <ul>
+            {% csrf_token %}
 
                 <!--闪购分类展示-->
                 {% for types in foodtypes %}
@@ -68,9 +70,10 @@
                                 </div>
                             </a>
                         <section>
-                            <button goodsid="" class="subShopping">-</button>
-                            <span>0</span>
-                            <button goodsid="" class="addShopping">+</button>
+                            <button class="subShopping" onclick="subCart({{ gds.id }})">-</button>
+                            <script type="text/javascript">goodsNum({{ gds.id }})</script>
+                            <span id="num_{{ gds.id }}">0</span>
+                            <button class="addShopping" onclick="addCart({{ gds.id }})">+</button>
                         </section>
                         </li>
                     {% endfor %}

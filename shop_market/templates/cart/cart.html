@@ -8,6 +8,7 @@
 {% block EXTJS %}
     {{ block.super }}
     <script type="text/javascript" src="{% static 'app/cart/js/cart.js' %}"></script>
+    <script type="text/javascript" src="{% static 'app/cart/comment/functions.js' %}"></script>
 {% endblock %}
 
 
@@ -55,35 +56,40 @@
                 <menu>
 
                     <ul>
+                    {% csrf_token %}
                         <!--购物车信息展示-->
-                            <li class="menuList" cartid="">
+                        {% for cart in carts %}
+                            <li class="menuList" cartid="{{ cart.id }}">
                                 <div class="confirm">
-                                    <span class="is_choose" is_select="">
-
-                                            <span>√</span>
-
-                                            <span></span>
-
-
+                                    <span class="is_choose" is_select="{{ cart.is_select  }}">
+                                    {% if cart.is_select %}
+                                            <span id="num_{{ cart.id }}">√</span>
+                                    {% else %}
+                                            <span id="num_{{ cart.id }}"></span>
+                                    {% endif %}
                                     </span>
                                 </div>
                                 <a href="#">
-                                    <img src="" alt="">
-                                    <p></p>
+                                    <img src="{{ cart.goods.productimg }}" alt="{{ cart.goods.productname }}">
+                                    <p>{{ cart.goods.productname }}</p>
+                                    <p class="price">
+                                <span>单价:¥{{ cart.goods.price }}</span>
+                                </p>
                                 </a>
                                 <section>
-                                    <button class="subShopping">-</button>
-                                    <span></span>
-                                    <button class="addShopping">+</button>
+                                    <button class="subShopping" onclick="subCart({{ cart.goods_id }})">-</button>
+                                    <span id="num_{{ cart.goods_id }}">{{ cart.c_num }}</span>
+                                    <button class="addShopping" onclick="addCart({{ cart.goods_id }})">+</button>
                                 </section>
                             </li>
+                        {% endfor %}
                         <!--购物车数据处理结束-->
 
 
                         <li class="payTheBill">
 
-                            <div class="confirm" id="all_select">
-                                <span>
+                            <div class="confirm">
+                                <span id="all_select">
 
                                         <span>√</span>
 
@@ -97,7 +103,7 @@
                                 <span>总价:</span>
                             </p>
 
-                            <span id="generate_order">下单</span>
+                            <span><a href="{% url 'xf:generateOrder' %}">下单</a></span>
 
                         </li>
 
