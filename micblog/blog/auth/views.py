@@ -59,3 +59,10 @@ def changepwd():
     return render_template('auth/changepwd.html', form=form)
 
 
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.ping()
+
+
+

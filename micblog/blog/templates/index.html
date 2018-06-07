@@ -1,11 +1,28 @@
 {% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import '_macros.html' as macros %}
 {% block page_content %}
-    <div class="navbar-header">
-        <h1>Hello,
-            {% if current_user.is_authenticated %}
-                {{ current_user.username }}
-            {% else %}
-                Stranger
-            {% endif %}</h1>
+    <div class="container">
+        <div class="navbar-header">
+            <h1>Hello,
+                {% if current_user.is_authenticated %}
+                    {{ current_user.username }}
+                {% else %}
+                    Stranger
+                {% endif %}</h1>
+
+
+            <hr>
+            <div class="navbar-collapse">
+                {% if current_user.can(Permission.WRITE_ARTICLES) %}
+                    {{ wtf.quick_form(form) }}
+                {% endif %}
+            </div>
+            {% include '_post.html' %}
+        </div>
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, '.index ') }}
     </div>
+    </div>
+
 {% endblock %}
