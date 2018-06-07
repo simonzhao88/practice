@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block EXTJS %}
-{{ block.super }}
+    {{ block.super }}
     <script type="text/javascript" src="{% static 'app/mine/js/mine.js' %}"></script>
 {% endblock %}
 
@@ -18,30 +18,29 @@
             <!--如果登录，展示头像-->
             {% if user %}
                 <img src="/media/{{ user.icon }}" alt="icon">
-            <!--或者-->
-                {% else %}
+                <!--或者-->
+            {% else %}
                 <span class="glyphicon glyphicon-user"></span>
             {% endif %}
             <!--判断结束-->
 
             <!--如果登录，展示姓名-->
-        {% if user %}
+            {% if user %}
                 <p>{{ user.username }}</p>
-            <!--或者展示登录的链接-->
+                <!--或者展示登录的链接-->
             {% else %}
                 <a href="{% url 'user:login' %}">登录</a>
-        {% endif %}
+            {% endif %}
             <!--判断结束-->
-
 
 
             <p><span class="glyphicon glyphicon-fire"></span><span>等级</span></p>
             <!--如果没有登录,展示注册信息-->
-        {% if not user %}
+            {% if not user %}
                 <div id="regis">
                     <a href="{% url 'user:register' %}">注册</a>
                 </div>
-        {% endif %}
+            {% endif %}
             <!--判断结束-->
 
             <p><span class="glyphicon glyphicon-heart"></span><span>收藏</span></p>
@@ -60,6 +59,7 @@
                             <dt><span id="wait_pay_list" class="glyphicon glyphicon-usd"></span>
                                 <span class="badge">
                                     <!--代付款的数量-->
+                                    {{ wait_pay }}
                                 </span></dt>
                             <dd>待付款</dd>
                         </dl>
@@ -68,9 +68,12 @@
                     <li>
                         <dl>
                             <dt><span id="order_payed_list" class="glyphicon glyphicon-envelope"></span>
-                                <span class="badge">
+                                {% if payed %}
+                                    <span class="badge">
                                     <!--待收货的数量-->
+                                    {{ payed }}
                                 </span></dt>
+                                {% endif %}
                             <dd>待收货</dd>
                         </dl>
 

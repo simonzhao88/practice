@@ -43,25 +43,26 @@ function subCart(goods_id) {
         }
     })
 }
-
-function goodsNum(goods_id) {
-    csrf = $("input[name=csrfmiddlewaretoken]").val();
-    $.ajax({
-        url: '/xf/goodsNum/',
-        type: 'POST',
-        data: {'goods_id': goods_id},
-        dataType: 'json',
-        headers: {'X-CSRFToken': csrf},
-        success: function (msg) {
-            if (msg.code == 200) {
-                $('#num_' + goods_id).text(msg.c_num)
-            }
-        },
-        error: function (msg) {
-            console.log('连接服务器失败~')
-        }
-    })
-}
+// $(function () {
+//     function goodsNum(goods_id) {
+//     csrf = $("input[name=csrfmiddlewaretoken]").val();
+//     $.ajax({
+//         url: '/xf/goodsNum/',
+//         type: 'POST',
+//         data: {'goods_id': goods_id},
+//         dataType: 'json',
+//         headers: {'X-CSRFToken': csrf},
+//         success: function (msg) {
+//             if (msg.code == 200) {
+//                 $('#num_' + goods_id).text(msg.c_num)
+//             }
+//         },
+//         error: function (msg) {
+//             console.log('连接服务器失败~')
+//         }
+//     })
+// }
+// });
 
 $(function () {
     function isChoose() {
@@ -82,6 +83,7 @@ $(function () {
                         $('#num_' + cart_id).html("");
                     }
                     current_li.attr("is_select", data["check"]);
+                    $('#totalPrice').text(data.total_price);
                 }
             },
             error: function (msg) {
@@ -95,9 +97,9 @@ $(function () {
         var not_selects = [];
         var selects = [];
         var isselect;
-        var count = 0
+        var count=0;
         $(".is_choose").each(function () {
-            count += 1
+            count += 1;
             if ($(this).attr("is_select").toLowerCase() == "false"){
                 // 将未选中添加到指定集合中
                 not_selects.push($(this).parents("li").attr("cartid"));
@@ -105,10 +107,12 @@ $(function () {
                 selects.push($(this).parents("li").attr("cartid"));
             }
             if (selects.length < count ){
-                isselect = 1
+                isselect = 1;
+                $('#choose_all').html("√")
             }
             else {
                 isselect = 2
+                $('#choose_all').html("")
             }
             var csrf = $("input[name=csrfmiddlewaretoken]").val();
             var current_li = $(this);
@@ -127,6 +131,7 @@ $(function () {
                             $('#num_' + cart_id).html("");
                         }
                         current_li.attr("is_select", data["check"]);
+                        $('#totalPrice').text(data.total_price);
                     }
                 },
                 error: function (msg) {
@@ -135,25 +140,5 @@ $(function () {
             })
 
         })
-        // $(".is_choose").each(function () {
-        // if ($(this).attr("is_select").toLowerCase() == "false"){
-        //     // 将未选中添加到指定集合中
-        //     not_selects.push($(this).parents("li").attr("cartid"));
-        // }else{
-        //     selects.push($(this).parents("li").attr("cartid"));
-        // }
-        // isChoose()
-        // });
-
-
-        // var csrf = $("input[name=csrfmiddlewaretoken]").val();
-        // $.ajax({
-        //     url: '/',
-        //     type: 'POST',
-        //     dataType: 'json',
-        //     headers: {'X-CSRFToken': csrf},
-        //     data: {},
-        //
-        // })
     })
 });

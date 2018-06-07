@@ -8,17 +8,23 @@
 
     <ul>
         <!--订单信息展示-->
+        {% for order in orders %}
             <li>
-                <a href="">
+                <a href="{% url 'xf:waitPaytoPay' %}?order_id={{ order.id }}">
                     <p><!-- 订单id --></p>
-                    <p><!-- 数量 --></p>
+                    <p><!-- 数量 -->订单编号：{{ order.o_num }}</p>
                         <!--展示商品的名称-->
+                        {% for goods in order.ordergoodsmodel_set.all %}
                         <li>
-                            <img src="" alt="">
+                            <img src="{{ goods.goods.productimg }}" alt="">
+                            <span>{{ goods.goods.productlongname }}</span>
+                            <p><span>数量：{{ goods.goods_num }}</span></p>
                         </li>
+                            {% endfor %}
                         <!--处理结束-->
                 </a>
             </li>
+        {% endfor %}
         <!--订单处理结束-->
 
 

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from user.models import UserTicketModel
-from utils.toolfuncs import get_order_random_id
+from utils.toolfuncs import get_order_random_id, get_total_price
 from .models import MainWheel, MainNav, MainMustbuy, MainShop, \
     MainShow, Goods, FoodType, CartModel, OrderModel, OrderGoodsModel
 from django.http import HttpResponseRedirect, JsonResponse
@@ -70,13 +70,17 @@ def user_market(request, typeid, cid, sid):
             for i in types:
                 child_type_info = i.split(':')
                 child_list.append(child_type_info)
+        ticket = request.COOKIES['ticket']
+        user = UserTicketModel.objects.filter(ticket=ticket).first().user
+        carts = user.cartmodel_set.all().all()
         ctx = {
             'title': '闪购超市',
             'foodtypes': foodtypes,
             'goods': goods,
             'typeid': typeid,
             'childs': child_list,
-            'cid': cid
+            'cid': cid,
+            'carts': carts
         }
 
         return render(request, 'market/market.html', context=ctx)
@@ -92,8 +96,10 @@ def cart(request):
         user = request.user
         if user.id:
             carts = CartModel.objects.filter(user=user)
+            total_price = get_total_price(user)
             ctx = {
-                'carts': carts
+                'carts': carts,
+                'total_price': total_price
             }
         return render(request, 'cart/cart.html', context=ctx)
 
@@ -105,12 +111,19 @@ def mine(request):
     :return:
     """
     if request.method == 'GET':
-        ticket = request.COOKIES.get('ticket')
-        try:
-            user = UserTicketModel.objects.filter(ticket=ticket).first().user
-        except AttributeError:
-            user = None
-        return render(request, 'mine/mine.html', {'user': user, 'title': '个人中心'})
+        user = request.user
+        orders = OrderModel.objects.filter(user=user)
+        payed, wait_pay = 0, 0
+        for order in orders:
+            if order.o_status == 0:
+                wait_pay += 1
+            elif order.o_status == 1:
+                payed += 1
+        ctx = {
+            'user': user, 'title': '个人中心',
+            'payed': payed, 'wait_pay': wait_pay
+        }
+        return render(request, 'mine/mine.html', context=ctx)
 
 
 def add_cart(request):
@@ -182,34 +195,35 @@ def sub_cart(request):
         return JsonResponse(data)
 
 
-def goods_num(request):
-    """
-    显示闪购页面用户加入购物车商品的数量
-    :param request:
-    :return:
-    """
-    if request.method == 'POST':
-        user = request.user
-        goods_id = request.POST.get('goods_id')
-        data = {
-            'code': 200,
-            'msg': '请求成功'
-        }
-        # 判断用户是否是系统自带的anonymouseuser还是登陆的用户
-        if user.id:
-            user_cart = CartModel.objects.filter(user_id=user.id,
-                                                 goods_id=goods_id).first()
+# def goods_num(request):
+#     """
+#     显示闪购页面用户加入购物车商品的数量
+#     :param request:
+#     :return:
+#     """
+#     if request.method == 'POST':
+#         user = request.user
+#         goods_id = request.POST.get('goods_id')
+#         data = {
+#             'code': 200,
+#             'msg': '请求成功'
+#         }
+#         # 判断用户是否是系统自带的anonymouseuser还是登陆的用户
+#         if user.id:
+#             user_cart = CartModel.objects.filter(user_id=user.id,
+#                                                  goods_id=goods_id).first()
+#
+#             if user_cart:
+#                 data['c_num'] = user_cart.c_num
+#         return JsonResponse(data)
 
-            if user_cart:
-                data['c_num'] = user_cart.c_num
-        return JsonResponse(data)
 
-
-def change_status(request):
+def change_cart_status(request):
     """
     修改购物车商品选择状态
     :param request:
     :return:
+    is_select:0 代表一个一个选择，1表示全选， 2表示全不选
     """
     data = {
         'code': 200,
@@ -222,16 +236,15 @@ def change_status(request):
         if not is_select:
             if cart.is_select:
                 cart.is_select = False
-                data['check'] = cart.is_select
             else:
                 cart.is_select = True
-                data['check'] = cart.is_select
         elif is_select == '1':
             cart.is_select = True
         else:
             cart.is_select = False
-
+        data['check'] = cart.is_select
         cart.save()
+        data['total_price'] = get_total_price(request.user)
     return JsonResponse(data)
 
 
@@ -244,17 +257,81 @@ def generate_order(request):
     if request.method == 'GET':
         user = request.user
 
-        o_num = get_order_random_id()
-        OrderModel.objects.create(user=user, o_num=o_num)
-        order = OrderModel.objects.filter(o_num=o_num).first()
+        o_num = user.id + get_order_random_id()
+        # 生成订单数据
         user_carts = CartModel.objects.filter(user=user, is_select=True)
-        for cart in user_carts:
-            goods = cart.goods
-            goods_num = cart.c_num
-            OrderGoodsModel.objects.create(goods=goods, order=order, goods_num=goods_num)
-            cart.delete()
-        ctx = {
-            'o_num': o_num,
-            'carts': user_carts,
-        }
+        if user_carts:
+        	# 创建订单数据
+            OrderModel.objects.create(user=user, o_num=o_num)
+            order = OrderModel.objects.filter(o_num=o_num).first()
+            for cart in user_carts:
+                goods = cart.goods
+                goods_num = cart.c_num
+                # 生成订单商品关系数据
+                OrderGoodsModel.objects.create(goods=goods, order=order, goods_num=goods_num)
+                # 删除购物车数据
+                cart.delete()
+            ctx = {
+                'order': order
+            }
     return render(request, 'order/order_info.html', context=ctx)
+
+
+def change_order_status(request):
+    """
+    付款支付，修改订单支付状态
+    :param request:
+    :return:
+    """
+    if request.method == 'POST':
+        data = {
+            'code': 200,
+            'msg': '请求成功'
+        }
+        order_id = request.POST.get('order_id')
+        order = OrderModel.objects.filter(id=order_id).first()
+        order.o_status = 1
+        order.save()
+    return JsonResponse(data)
+
+
+def wait_pay(request):
+    """
+    待支付页面
+    :param request:
+    :return:
+    """
+    if request.method == 'GET':
+        user = request.user
+        order = OrderModel.objects.filter(user=user, o_status=0)
+        ctx = {
+            'title': '待付款',
+            'orders': order
+        }
+    return render(request, 'order/order_list_wait_pay.html',
+                  context=ctx)
+
+
+def order_payed(request):
+    """
+    待收货页面
+    :param request:
+    :return:
+    """
+    if request.method == 'GET':
+        user = request.user
+        order = OrderModel.objects.filter(user=user, o_status=1)
+        ctx = {
+            'title': '待收货',
+            'orders': order
+        }
+    return render(request, 'order/order_list_payed.html',
+                  context=ctx)
+
+
+def wait_pay_to_pay(request):
+    if request.method == 'GET':
+        order_id = request.GET.get('order_id')
+        order = OrderModel.objects.filter(id=order_id).first()
+
+    return render(request, 'order/order_info.html', {'order': order})

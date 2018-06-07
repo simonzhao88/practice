@@ -21,7 +21,8 @@ class UserAuthMiddle(MiddlewareMixin):
 
         path = request.path
         need_login = ['/xf/mine/', '/xf/cart/', '/xf/addCart/', '/xf/subCart/',
-                      '/xf/goodsNum/', '/xf/generateOrder/']   # 需要登录的页面
+                      '/xf/goodsNum/', '/xf/generateOrder/', '/xf/changeOrderStatus/',
+                      '/xf/waitPay/', '/xf/orderPayed/', '/xf/changeCartStatus/']   # 需要登录的页面
         if path not in need_login:
             return None
 

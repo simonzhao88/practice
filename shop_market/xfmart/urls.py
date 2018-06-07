@@ -17,8 +17,16 @@ urlpatterns = [
     url(r'^addCart/', views.add_cart, name='addCart'),
     # 删除购物车商品
     url(r'^subCart/', views.sub_cart, name='subCart'),
-    url(r'^goodsNum/', views.goods_num, name='goodsNum'),
     # 改变购物车商品状态
-    url(r'^changeCartStatus/', views.change_status, name='changeCartStatus'),
-    url(r'^generateOrder/', views.generate_order, name='generateOrder')
+    url(r'^changeCartStatus/', views.change_cart_status, name='changeCartStatus'),
+    # 下单
+    url(r'^generateOrder/', views.generate_order, name='generateOrder'),
+    # 修改订单状态（支付）
+    url(r'^changeOrderStatus/', views.change_order_status, name='changeOrderStatus'),
+    # 待支付页面
+    url(r'^waitPay/', views.wait_pay, name='waitPay'),
+    # 待收货页面
+    url(r'^orderPayed/', views.order_payed, name='orderPayed'),
+    # 待支付跳转到支付页面
+    url(r'^waitPaytoPay', views.wait_pay_to_pay, name='waitPaytoPay')
 ]

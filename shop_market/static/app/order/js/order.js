@@ -1,4 +1,4 @@
-$(function () {
+/*$(function () {
 
     $("#alipay").click(function () {
 
@@ -14,6 +14,33 @@ $(function () {
                 window.open("/axf/mine/", target="_self");
             }
         })
+    })
+
+})
+*/
+$(function () {
+
+    $("#alipay").on('click', function (e) {
+
+        var order_id = $(e.target).attr("orderid");
+        var csrf = $("input[name=csrfmiddlewaretoken]").val();
+        console.log(order_id);
+        $.ajax({
+             url: '/xf/changeOrderStatus/',
+            type: 'POST',
+            data: {'order_id': order_id},
+            dataType: 'json',
+            headers: {'X-CSRFToken': csrf},
+            success: function (data) {
+                if (data.code == 200) {
+                    location.href = '/xf/mine/'
+                }
+            },
+            error: function (msg) {
+                console.log('连接服务器失败~')
+            }
+        })
+
     })
 
 })

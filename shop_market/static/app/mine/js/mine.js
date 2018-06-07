@@ -2,13 +2,13 @@ $(function () {
 
     $("#order_payed_list").click(function () {
 
-        window.open("/axf/orderlist/", target="_self");
+        window.open("/xf/orderPayed/", target="_self");
 
     })
 
     $("#wait_pay_list").click(function () {
 
-        window.open("/axf/orderlistwaitpay/", target="_self");
+        window.open("/xf/waitPay/", target="_self");
 
     })
 
