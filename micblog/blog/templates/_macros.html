@@ -10,11 +10,11 @@ page = pagination.page - 1, **kwargs) }}{% else %}#{% endif %}">
             {% if p %}
                 {% if p == pagination.page %}
                     <li class="active">
-                        <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+                        <a href="{{ url_for(endpoint, page = p) }}">{{ p }}</a>
                     </li>
                 {% else %}
                     <li>
-                        <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+                        <a href="{{ url_for(endpoint, page = p) }}">{{ p }}</a>
                     </li>
                 {% endif %}
             {% else %}
