@@ -8,6 +8,7 @@ class Config:
     SECRET_KEY = 'sdgtshdgawjegshdbzsgbebsaf'
     BLOG_ADMIN = 'simon@email.com'
     BLOG_POSTS_PER_PAGE = 5
+    BLOG_FOLLOW_PER_PAGE = 5
 
     @staticmethod
     def init_app(app):

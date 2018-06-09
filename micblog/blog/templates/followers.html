@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% import "_macros.html" as macros %}
+
+{% block page_content %}
+    <div>
+        {% for follower in follows %}
+            <a href="{{ url_for('.user', username=follower.user.username) }}">{{ follower.user.username }}</a>
+            <div>关注时间：{{ moment(follower.timestamp).fromNow() }}</div>
+            <hr>
+        {% endfor %}
+    </div>
+    <div class="pagination">
+        {{ macros.pagination_widget(pagination, endpoint, username=current_user) }}
+    </div>
+{% endblock %}
+{% block head %}
+    {{ super() }}
+    {{ pagedown.include_pagedown() }}
+    {{ moment.include_moment() }}
+{% endblock %}

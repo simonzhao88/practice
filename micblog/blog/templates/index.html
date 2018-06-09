@@ -18,6 +18,30 @@
                     {{ wtf.quick_form(form) }}
                 {% endif %}
             </div>
+            {% if current_user.is_authenticated %}
+                <ul class="nav nav-tabs" style="margin-top: 1rem; margin-bottom: 1rem">
+                    {% if not request.cookies.get('show_followed') %}
+                        <li role="presentation" class="active"><a href="{{ url_for('.show_all') }}">All</a>
+                        </li>
+                        <li role="presentation"><a href="{{ url_for('.show_followed') }}">Followers</a>
+                        </li>
+                        <li role="presentation"><a href="{{ url_for('.show_mine') }}">mine</a>
+                        </li>
+                    {% elif request.cookies.get('show_followed') == '1' %}
+                        <li role="presentation"><a href="{{ url_for('.show_all') }}">All</a></li>
+                        <li role="presentation" class="active"><a href="{{ url_for('.show_followed') }}">Followers</a>
+                        </li>
+                         <li role="presentation"><a href="{{ url_for('.show_mine') }}">mine</a>
+                        </li>
+                        {% else %}
+                        <li role="presentation"><a href="{{ url_for('.show_all') }}">All</a></li>
+                        <li role="presentation"><a href="{{ url_for('.show_followed') }}">Followers</a>
+                        </li>
+                         <li role="presentation" class="active"><a href="{{ url_for('.show_mine') }}">mine</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% endif %}
             {% include '_post.html' %}
         </div>
         <div class="pagination">

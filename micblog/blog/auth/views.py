@@ -24,7 +24,9 @@ def login():
 def logout():
     logout_user()
     flash('登出成功~~')
-    return redirect(url_for('main.index'))
+    res = redirect(url_for('main.index'))
+    res.delete_cookie('show_followed')
+    return res
 
 
 @auth.route('/register', methods=['GET', 'POST'])
