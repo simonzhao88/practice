@@ -9,6 +9,7 @@ class Config:
     BLOG_ADMIN = 'simon@email.com'
     BLOG_POSTS_PER_PAGE = 5
     BLOG_FOLLOW_PER_PAGE = 5
+    BLOG_COMMENTS_PER_PAGE = 10
 
     @staticmethod
     def init_app(app):

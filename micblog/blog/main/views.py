@@ -3,9 +3,9 @@ from flask_login import current_user, login_required
 
 from blog.utils.check_permission import admin_required, permission_required
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, PostForm
+from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from .. import db
-from ..models import User, Role, Permission, Post
+from ..models import User, Role, Permission, Post, Comment
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -43,7 +43,7 @@ def user(username):
     u = User.query.filter_by(username=username).first()
     if u is None:
         abort(404)
-    return render_template('user.html', user=u, Permission=Permission,)
+    return render_template('user.html', user=u, Permission=Permission, )
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -62,7 +62,8 @@ def edit_profile():
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', form=form,
-                           username=current_user.username)
+                           username=current_user.username,
+                           Permission=Permission)
 
 
 @main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
@@ -89,13 +90,31 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template('edit_profile.html',
-                           form=form, user=user)
+                           form=form, user=user,
+                           Permission=Permission)
 
 
-@main.route('/post/<int:id>')
+@main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
-    return render_template('post.html', posts=[post])
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data,
+                          post=post,
+                          author_id=current_user.id)
+        db.session.add(comment)
+        db.session.commit()
+        flash('评论成功~')
+        return redirect(url_for('.post', id=post.id))
+    page = request.args.get('page', 1, type=int)
+    pagination = post.comments.order_by(Comment.timestamp.desc()).paginate(
+        page, per_page=current_app.config['BLOG_COMMENTS_PER_PAGE'], error_out=False
+    )
+    comments = pagination.items
+    return render_template('post.html', posts=[post],
+                           form=form, comments=comments,
+                           pagination=pagination,
+                           Permission=Permission)
 
 
 @main.route('/edit/<int:id>', methods=['GET', 'POST'])
@@ -115,7 +134,8 @@ def edit(id):
         return redirect(url_for('.post', id=post.id))
     form.title.data = post.title
     form.body.data = post.body
-    return render_template('edit_post.html', form=form)
+    return render_template('edit_post.html', form=form,
+                           Permission=Permission)
 
 
 @main.route('/follow/<username>')
@@ -165,7 +185,7 @@ def followers(username):
                item in pagination.items]
     return render_template('followers.html', user=user, title='关注者',
                            endpoint='.followers', pagination=pagination,
-                           follows=follows)
+                           follows=follows, Permission=Permission)
 
 
 @main.route('/followed/<username>')
@@ -183,14 +203,14 @@ def followed_by(username):
                  item in pagination.items]
     return render_template('followed.html', user=user, title='被关注者',
                            endpoint='.followers', pagination=pagination,
-                           followeds=followeds)
+                           followeds=followeds, Permission=Permission)
 
 
 @main.route('/all')
 @login_required
 def show_all():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '', max_age=7*24*60*60)
+    resp.set_cookie('show_followed', '', max_age=7 * 24 * 60 * 60)
     return resp
 
 
@@ -198,7 +218,7 @@ def show_all():
 @login_required
 def show_followed():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '1', max_age=7*24*60*60)
+    resp.set_cookie('show_followed', '1', max_age=7 * 24 * 60 * 60)
     return resp
 
 
@@ -206,5 +226,43 @@ def show_followed():
 @login_required
 def show_mine():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '2', max_age=7*24*60*60)
+    resp.set_cookie('show_followed', '2', max_age=7 * 24 * 60 * 60)
     return resp
+
+
+@main.route('/moderate')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def moderate():
+    page = request.args.get('page', 1, type=int)
+    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+        page, per_page=current_app.config['BLOG_COMMENTS_PER_PAGE'],
+        error_out=False)
+    comments = pagination.items
+    return render_template('moderate.html', comments=comments,
+                           pagination=pagination, page=page,
+                           Permission=Permission)
+
+
+@main.route('/moderate/enable/<int:id>')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def moderate_enable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = False
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(url_for('.moderate',
+                            page=request.args.get('page', 1, type=int)))
+
+
+@main.route('/moderate/disable/<int:id>')
+@login_required
+@permission_required(Permission.MODERATE_COMMENTS)
+def moderate_disable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = True
+    db.session.add(comment)
+    db.session.commit()
+    return redirect(url_for('.moderate',
+                            page=request.args.get('page', 1, type=int)))

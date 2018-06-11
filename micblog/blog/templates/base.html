@@ -18,6 +18,9 @@
     {{ moment.include_jquery() }}
     {{ moment.include_moment() }}
     {{ moment.lang("zh-CN") }}
+    <style>
+    a, a:hover, a:visited, a:link, a:active{text-decoration: none;}
+    </style>
 {% endblock %}
 <body>
 {% block navbar %}
@@ -37,6 +40,11 @@
                 <ul class="nav navbar-nav">
                     <li><a href="/">Home</a></li>
                 </ul>
+                <ul class="nav navbar-nav">
+                    {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+                        <li><a href="{{ url_for('main.moderate') }}">管理评论</a></li>
+                    {% endif %}
+                </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated %}
                         <li role="presentation" class="dropdown">
@@ -45,12 +53,13 @@
                                 {{ current_user.username }} <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu">
-                                 <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a></li>
-                                 <li><a href="{{ url_for('auth.logout') }}">Sign Out</a></li>
+                                <li><a href="{{ url_for('main.user', username=current_user.username) }}">我的资料</a></li>
+                                <li><a href="{{ url_for('auth.logout', exchange=0) }}">登出</a></li>
+                                <li><a href="{{ url_for('auth.logout', exchange=1) }}">切换账号</a></li>
                             </ul>
                         </li>
                     {% else %}
-                        <li><a href="{{ url_for('auth.login') }}">Sign In</a></li>
+                        <li><a href="{{ url_for('auth.login') }}">登录</a></li>
                     {% endif %}
                 </ul>
             </div>

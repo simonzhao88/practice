@@ -43,9 +43,11 @@
                 </ul>
             {% endif %}
             {% include '_post.html' %}
-        </div>
+        {% if  pagination.has_prev or pagination.has_next %}
         <div class="pagination">
             {{ macros.pagination_widget(pagination, '.index') }}
+        </div>{% else %}<p>关注人暂无文章~</p>
+        {% endif %}
         </div>
     </div>
 
