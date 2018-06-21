@@ -11,16 +11,6 @@ function decodeQuery(){
     }, {});
 }
 
-$(document).ready(function(){
-    var mySwiper = new Swiper ('.swiper-container', {
-        loop: true,
-        autoplay: 2000,
-        autoplayDisableOnInteraction: false,
-        pagination: '.swiper-pagination',
-        paginationType: 'fraction'
-    });
-    $(".book-house").show();
-});
 $(function () {
    var house_id = parseInt(decodeQuery().house_id);
    $.get('/api/house/detail/',{house_id: house_id}, function (result) {
@@ -31,6 +21,14 @@ $(function () {
                     result.data.images[i] + '"></li>'
             }
             $('.swiper-wrapper').append(image_html);
+            var mySwiper = new Swiper ('.swiper-container', {
+                loop: true,
+                autoplay: 2000,
+                autoplayDisableOnInteraction: false,
+                pagination: '.swiper-pagination',
+                paginationType: 'fraction'
+            });
+            $(".book-house").show();
             $('.house-price span').text(result.data.price);
             $('.house-title').text(result.data.title);
             $('.landlord-pic img').attr('src', '/static/' + result.data.user_avatar);
