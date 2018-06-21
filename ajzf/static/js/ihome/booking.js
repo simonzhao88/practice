@@ -46,4 +46,36 @@ $(document).ready(function(){
             $(".order-amount>span").html(amount.toFixed(2) + "(共"+ days +"晚)");
         }
     });
-})
+});
+
+$(function () {
+    var house_id = decodeQuery().house_id;
+    $.get('/api/house/detail/', {house_id: house_id}, function(result) {
+        if (result.code==200){
+            $('.house-info img').attr('src', '/static/' + result.data.images[0]);
+            $('.house-text h3').text(result.data.title);
+            $('.house-text p:first').text(result.data.address);
+            $('.house-text p:last span').text(result.data.price);
+        }
+    });
+    $('.submit-btn').on('click', function () {
+        var startDate = $("#start-date").val();
+        var endDate = $("#end-date").val();
+        var house_id = location.search.split('=')[1];
+        var price = $(".house-text>p>span").html()
+        $.post('/api/order/',
+            {
+                begin_date: startDate,
+                end_date: endDate,
+                house_id:house_id,
+                price: price
+            }, function (result) {
+                if (result.code==200){
+                    location.href = '/order/myorder/'
+                }else {
+                    $('.popup p').text(result.msg);
+                    showErrorMsg()
+                }
+            })
+    })
+});

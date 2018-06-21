@@ -41,7 +41,7 @@ $(function () {
             dataType: 'json',
             success: function (data) {
                 if (data.code == 200) {
-                    $('.popup_con').css('display', 'block')
+                    showSuccessMsg()
                 } else if(data.code==1009){
                     $('.error-msg').css('display', 'block')
                 }else {
@@ -54,8 +54,5 @@ $(function () {
         };
         $("#form-name").ajaxSubmit(options);
     });
-    $('body').on('click', function () {
-        $('.popup_con').css('display', 'none')
-    })
 });
 

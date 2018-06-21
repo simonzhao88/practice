@@ -18,7 +18,8 @@ class Config:
     # 模板文件路径
     TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
     # 上传文件路径
-    UPLOAD_DIR = os.path.join(os.path.join(BASE_DIR, 'static'), 'upload')
+    UPLOAD_AVATAR_DIR = os.path.join(os.path.join(BASE_DIR, 'static'), 'upload/avatar')
+    UPLOAD_HOUSE_IMAGE_DIR = os.path.join(os.path.join(BASE_DIR, 'static'), 'upload')
 
     @staticmethod
     def init_app(app):

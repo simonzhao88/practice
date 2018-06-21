@@ -31,7 +31,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function (data) {
                 if (data.code==200) {
-                    location.href = '/mine/'
+                    location.href = '/auth/mine/'
                 }
                 else if(data.code==1006) {
                     $("#mobile-err span").html("用户不存在~");
