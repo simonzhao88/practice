@@ -146,6 +146,7 @@ class House(BaseModel, db.Model):
             'max_days': self.max_days,
             'order_count': self.order_count,
             'images': [image.url for image in self.images],
+            'orders': [order.to_dict() for order in self.orders],
             'facilities': [facility.to_dict() for facility in self.facilities],
         }
 
@@ -223,6 +224,7 @@ class Order(BaseModel, db.Model):
 
     def to_dict(self):
         return {
+            'username':self.user.name,
             'order_id': self.id,
             'house_title': self.house.title,
             'image': self.house.index_image_url if self.house.index_image_url else '',

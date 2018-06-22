@@ -1,11 +1,11 @@
 //模态框居中的控制
-function centerModals(){
-    $('.modal').each(function(i){   //遍历每一个模态框
-        var $clone = $(this).clone().css('display', 'block').appendTo('body');    
+function centerModals() {
+    $('.modal').each(function (i) {   //遍历每一个模态框
+        var $clone = $(this).clone().css('display', 'block').appendTo('body');
         var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 2);
         top = top > 0 ? top : 0;
         $clone.remove();
-        $(this).find('.modal-content').css("margin-top", top-30);  //修正原先已经有的30个像素
+        $(this).find('.modal-content').css("margin-top", top - 30);  //修正原先已经有的30个像素
     });
 }
 
@@ -24,7 +24,7 @@ function setStartDate() {
             startDate: startDate,
             format: "yyyy-mm-dd"
         });
-        $("#end-date").on("changeDate", function() {
+        $("#end-date").on("changeDate", function () {
             $("#end-date-input").val(
                 $(this).datepicker("getFormattedDate")
             );
@@ -44,11 +44,11 @@ function setEndDate() {
 }
 
 function goToSearchPage(th) {
-    var url = "/search.html?";
+    var url = "/house/search?";
     url += ("aid=" + $(th).attr("area-id"));
     url += "&";
     var areaName = $(th).attr("area-name");
-    if (undefined == areaName) areaName="";
+    if (undefined == areaName) areaName = "";
     url += ("aname=" + areaName);
     url += "&";
     url += ("sd=" + $(th).attr("start-date"));
@@ -57,21 +57,8 @@ function goToSearchPage(th) {
     location.href = url;
 }
 
-$(document).ready(function(){
+$(document).ready(function () {
     $(".top-bar>.register-login").show();
-    var mySwiper = new Swiper ('.swiper-container', {
-        loop: true,
-        autoplay: 2000,
-        autoplayDisableOnInteraction: false,
-        pagination: '.swiper-pagination',
-        paginationClickable: true
-    }); 
-    $(".area-list a").click(function(e){
-        $("#area-btn").html($(this).html());
-        $(".search-btn").attr("area-id", $(this).attr("area-id"));
-        $(".search-btn").attr("area-name", $(this).html());
-        $("#area-modal").modal("hide");
-    });
     $('.modal').on('show.bs.modal', centerModals);      //当模态框出现的时候
     $(window).on('resize', centerModals);               //当窗口大小变化的时候
     $("#start-date").datepicker({
@@ -80,8 +67,57 @@ $(document).ready(function(){
         startDate: "today",
         format: "yyyy-mm-dd"
     });
-    $("#start-date").on("changeDate", function() {
+    $("#start-date").on("changeDate", function () {
         var date = $(this).datepicker("getFormattedDate");
         $("#start-date-input").val(date);
     });
+
+    $.get('/api/house/index/', function (result) {
+        if (result.code == 200) {
+            if (result.username) {
+                $('.register-login').hide();
+                $('.user-info').show();
+                $('.user-name').text(result.username)
+            } else {
+                $('.register-login').show();
+                $('.user-info').hide()
+            }
+
+            var house_html = template('house_wrapper_img', {houses: result.houses})
+            $('.swiper-wrapper').html(house_html);
+            var mySwiper = new Swiper('.swiper-container', {
+                loop: true,
+                autoplay: 2000,
+                autoplayDisableOnInteraction: false,
+                pagination: '.swiper-pagination',
+                paginationClickable: true
+            });
+        }
+    });
+    $.get('/house/area_facility/', function (result) {
+        if (result.code == 200) {
+
+            var area_html = template('areas', {areas: result.areas});
+            $('.area-list').html(area_html)
+            $(".area-list a").click(function (e) {
+                $("#area-btn").html($(this).html());
+                $(".search-btn").attr("area-id", $(this).attr("area-id"));
+                $(".search-btn").attr("area-name", $(this).html());
+                $("#area-modal").modal("hide");
+            });
+        }
+    });
+
+    function user_logout() {
+        $.ajax({
+            url: "/auth/logout/",
+            type: 'delete',
+            success: function (relust) {
+                if (relust.code == 200) {
+                    location.href = "/house/index/";
+                }
+
+            }
+        })
+    }
 })

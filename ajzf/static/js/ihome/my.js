@@ -1,6 +1,13 @@
 function logout() {
-    $.get("/auth/logout/", function(data){
-            location.href = "/index/";
+    $.ajax({
+        url:"/auth/logout/",
+        type: 'delete',
+        success: function(relust){
+            if (relust.code==200){
+                location.href = "/house/index/";
+            }
+
+    }
     })
 }
 

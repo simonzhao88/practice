@@ -23,11 +23,11 @@ def login():
     return render_template('login.html')
 
 
-@auth.route('/logout/')
-@login_required
-def logout():
-    session.pop('u_id', None)
-    return redirect(url_for('.login'))
+# @auth.route('/logout/')
+# @login_required
+# def logout():
+#     session.pop('u_id', None)
+#     return redirect(url_for('.login'))
 
 
 @auth.route('/mine/')
@@ -190,6 +190,7 @@ class AuthenticationApi(Resource):
 
 api.add_resource(RegisterApi, '/auth/register/')
 api.add_resource(LoginApi, '/auth/login/')
+api.add_resource(LogoutApi, '/auth/logout/')
 api.add_resource(MineApi, '/api/mine/')
 api.add_resource(ProfileApi, '/api/profile/')
 api.add_resource(AuthenticationApi, '/api/authentication/')

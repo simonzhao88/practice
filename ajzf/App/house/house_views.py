@@ -17,6 +17,11 @@ from utils import status_code
 from utils.login_required import login_required
 
 
+@house.route('/index/')
+def index():
+    return render_template('index.html')
+
+
 @house.route('/myhouse/')
 def my_house():
     return render_template('myhouse.html')
@@ -45,6 +50,11 @@ def detail():
 @house.route('/booking/')
 def booking():
     return render_template('booking.html')
+
+
+@house.route('/search/')
+def search():
+    return render_template('search.html')
 
 
 class HouseApi(Resource):
@@ -144,6 +154,19 @@ class HouseDetailApi(Resource):
             return jsonify(status_code.HOUSE_QUERY_ERROR)
 
 
+class IndexApi(Resource):
+    def get(self):
+        username = ''
+        user_id = session['u_id']
+        if user_id:
+            username = User.query.get(user_id).name
+
+        houses = House.query.order_by(House.id.desc()).all()
+        return jsonify(code=200, username=username,
+                       houses=[house.to_dict() for house in houses])
+
+
 api.add_resource(HouseApi, '/api/house/')
 api.add_resource(HouseImageAPI, '/api/house/image/')
 api.add_resource(HouseDetailApi, '/api/house/detail/')
+api.add_resource(IndexApi, '/api/house/index/')

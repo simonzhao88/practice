@@ -113,10 +113,21 @@
             <div class="house-info layout-style">
                 <h3>评价信息</h3>
                 <ul class="house-comment-list">
-                    <li>
-                        <p>用户名<span class="fr">2016-11-11 20:00:00</span></p>
-                        <p>感觉不错</p>
+                    {% raw %}
+                    <script type="text/html" id="comments">
+                        {{ each orders as order }}
+                        {{ if order.comment & order.status != "REJECTED" }}
+                    <li class="comment">
+                        <p>{{ order.username }}<span class="fr">{{ order.create_date }}</span></p>
+                        <p>{{ order.comment }}</p>
                     </li>
+                        {{ /if }}
+                        {{ /each }}
+                        <li id="no-comment">
+                            <p></p>
+                        </li>
+                    </script>
+                    {% endraw %}
                 </ul>
             </div>
         </div>

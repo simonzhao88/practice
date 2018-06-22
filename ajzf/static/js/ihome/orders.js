@@ -17,8 +17,24 @@ function getCookie(name) {
 $(document).ready(function(){
     $('.modal').on('show.bs.modal', centerModals);      //当模态框出现的时候
     $(window).on('resize', centerModals);
-    $(".order-comment").on("click", function(){
-        var orderId = $(this).parents("li").attr("order-id");
-        $(".modal-comment").attr("order-id", orderId);
+});
+
+function showComment() {
+        $(".order-comment").on("click", function () {
+            var orderId = $(this).parents("li").attr("order-id");
+            $(".modal-comment").attr("order-id", orderId);
+        });
+    }
+
+$(function () {
+    $.get('/api/my/order/', function (result) {
+        if (result.code==200) {
+            var order_html = template('orders-list-tmpl', {orders: result.orders})
+            $('.orders-list').html(order_html);
+            showComment()
+        }
     });
+    $('modal-comment').on('click', function () {
+        var comment = $('#commnet').val()
+    })
 });

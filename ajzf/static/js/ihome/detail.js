@@ -29,6 +29,11 @@ $(function () {
                 paginationType: 'fraction'
             });
             $(".book-house").show();
+            var comment_html = template('comments', {orders:result.data.orders});
+            $('.house-comment-list').html(comment_html);
+            if (!$('.comment p').val()){
+                $('#no-comment p').text('暂无评论~')
+            }
             $('.house-price span').text(result.data.price);
             $('.house-title').text(result.data.title);
             $('.landlord-pic img').attr('src', '/static/' + result.data.user_avatar);
