@@ -9,6 +9,19 @@ function centerModals() {
     });
 }
 
+function logout() {
+        $.ajax({
+            url: "/auth/logout/",
+            type: 'delete',
+            success: function (relust) {
+                if (relust.code == 200) {
+                    location.href = "/house/index/";
+                }
+
+            }
+        })
+    }
+
 function setStartDate() {
     var startDate = $("#start-date-input").val();
     if (startDate) {
@@ -98,7 +111,7 @@ $(document).ready(function () {
         if (result.code == 200) {
 
             var area_html = template('areas', {areas: result.areas});
-            $('.area-list').html(area_html)
+            $('.area-list').html(area_html);
             $(".area-list a").click(function (e) {
                 $("#area-btn").html($(this).html());
                 $(".search-btn").attr("area-id", $(this).attr("area-id"));
@@ -108,16 +121,4 @@ $(document).ready(function () {
         }
     });
 
-    function user_logout() {
-        $.ajax({
-            url: "/auth/logout/",
-            type: 'delete',
-            success: function (relust) {
-                if (relust.code == 200) {
-                    location.href = "/house/index/";
-                }
-
-            }
-        })
-    }
 })

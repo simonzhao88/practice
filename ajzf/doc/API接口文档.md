@@ -385,8 +385,96 @@ data：房屋的信息
 * 预约页面信息
 
 同房屋详情接口
+
+* 首页
+
+request 请求
     
-## 预约模块接口
+    GET /api/house/index/
+response 响应
+
+成功响应：
+
+    {
+      "code": 200,
+      "houses": [
+        {
+          "address": "火车南站露天广场",
+          "area": "武侯区",
+          "create_time": "2018-06-23 11:33:36",
+          "id": 7,
+          "image": "upload\\7\\home02.jpg",
+          "order_count": 0,
+          "price": 10,
+          "room": 1,
+          "room_count": 1,
+          "title": "火车南站露天坝坝",
+          "user_avatar": "upload\\1529486595570001.jpg"
+        },
+        {
+          "address": "天府新区砖厂板房",
+          "area": "天府新区",
+          "create_time": "2018-06-22 16:05:57",
+          "id": 6,
+          "image": "upload\\6\\home02.jpg",
+          "order_count": 0,
+          "price": 5000,
+          "room": 1,
+          "room_count": 1,
+          "title": "天府新区工业房",
+          "user_avatar": "upload\\1529486595570001.jpg"
+        },
+        {
+          "address": "火车南站站前广场",
+          "area": "武侯区",
+          "create_time": "2018-06-21 14:42:08",
+          "id": 5,
+          "image": "upload\\5\\home01.jpg",
+          "order_count": 0,
+          "price": 235,
+          "room": 1,
+          "room_count": 1,
+          "title": "火车南站大床房",
+          "user_avatar": "upload\\1529486595570001.jpg"
+        }
+      ],
+      "username": ""
+      
+      
+* 搜索接口
+
+request 请求
+    
+    GET /api/house/search/
+    
+params 参数
+    
+    aid ：  # 区域id
+    sd ：  # 入住时间
+    ed ：  # 离开时间
+    sk ：  # 排序规则
+response 响应
+
+    {
+      "code": 200,
+      "house_info": [
+        {
+          "address": "天府新区砖厂板房",
+          "area": "天府新区",
+          "create_time": "2018-06-22 16:05:57",
+          "id": 6,
+          "image": "upload\\6\\home02.jpg",
+          "order_count": 0,
+          "price": 5000,
+          "room": 1,
+          "room_count": 1,
+          "title": "天府新区工业房",
+          "user_avatar": "upload\\1529486595570001.jpg"
+        }
+      ]
+    }
+    
+## 订单模块接口
 
 * 预约创建
 
@@ -413,3 +501,50 @@ response 响应
 成功响应：
 
     {'code': 200, 'msg': '请求成功~'}
+    
+
+* 我的订单
+request 请求
+    
+    GET /api/my/order/
+response 响应
+
+成功响应：
+
+    {
+        'username': 用户名
+        'order_id': 订单号
+        'house_title': 房屋标题
+        'image': 房屋首图
+        'create_date': 创建时间
+        'begin_date': 入住时间
+        'end_date': 退房时间
+        'amount': 总价
+        'days': 天数
+        'status': 订单状态
+        'comment': 评论或拒单理由
+        'house_id': 房屋id
+        }
+
+* 客户订单
+request 请求
+    
+    GET /api/customer/order/
+response 响应
+
+成功响应：
+
+    {
+        'username': 用户名
+        'order_id': 订单号
+        'house_title': 房屋标题
+        'image': 房屋首图
+        'create_date': 创建时间
+        'begin_date': 入住时间
+        'end_date': 退房时间
+        'amount': 总价
+        'days': 天数
+        'status': 订单状态
+        'comment': 评论或拒单理由
+        'house_id': 房屋id
+        }

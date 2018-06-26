@@ -62,7 +62,7 @@ $(function () {
         var startDate = $("#start-date").val();
         var endDate = $("#end-date").val();
         var house_id = location.search.split('=')[1];
-        var price = $(".house-text>p>span").html()
+        var price = $(".house-text>p>span").html();
         $.post('/api/order/',
             {
                 begin_date: startDate,
@@ -72,9 +72,10 @@ $(function () {
             }, function (result) {
                 if (result.code==200){
                     location.href = '/order/myorder/'
-                }else {
+                }else if(result.code==404){
                     $('.popup p').text(result.msg);
-                    showErrorMsg()
+                    showErrorMsg();
+                    location.href = '/auth/login/'
                 }
             })
     })

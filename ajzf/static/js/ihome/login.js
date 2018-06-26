@@ -31,6 +31,9 @@ $(document).ready(function() {
             dataType: 'json',
             success: function (data) {
                 if (data.code==200) {
+                    if (document.referrer != '/auth/login/'){
+                        location.href = document.referrer;
+                    }
                     location.href = '/auth/mine/'
                 }
                 else if(data.code==1006) {

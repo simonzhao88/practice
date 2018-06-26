@@ -7,7 +7,7 @@ from App.models import Order, House, User
 from App.order import order
 from exts_init import api
 from utils import status_code
-from utils.login_required import login_required
+from utils.login_required import login_required, check_login
 
 
 @order.route('/myorder/')
@@ -21,7 +21,7 @@ def customer_order():
 
 
 class OrderApi(Resource):
-    @login_required
+    @check_login
     def post(self):
         user_id = session['u_id']
         house_id = request.form.get('house_id')

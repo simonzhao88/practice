@@ -59,6 +59,9 @@ $(function () {
             }
             $('.house-facility-list').append(facility);
             $('.book-house').attr('href', '/house/booking?house_id=' + house_id)
+            if (result.data.user_id == result.u_id){
+                $('.book-house').hide()
+            }
 
         }else {
             alert('无此房屋信息，请查验后再查询~')

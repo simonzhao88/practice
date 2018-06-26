@@ -2,6 +2,7 @@ OK = 200
 DATABASE_ERROR = {'code': 0, 'msg': '数据库错误，稍后重试~'}
 SUCCESS = {'code': 200, 'msg': '请求成功~'}
 DATA_NOT_FULL = {'code': 1000, 'msg': '请填写完所有参数~'}
+LOGIN_REQUIRED = {'code': 404, 'msg': '请登录~'}
 # 用户模块
 USER_REGISTER_NOT_NULL = {'code': 1001, 'msg': '请填写完所有参数~'}
 USER_REGISTER_MOBILE_ERROR = {'code': 1002, 'msg': '请输入正确的手机号~'}
