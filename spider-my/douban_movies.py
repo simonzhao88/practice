@@ -11,6 +11,7 @@ header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) '
                   'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
 }
+proxy = {"http": "http://101.236.18.101:8866"}
 
 
 def get_movies_tag(url):
@@ -19,8 +20,8 @@ def get_movies_tag(url):
     :param url:
     :return:
     """
-    res = requests.get(url, headers=header)
-    # print(res.json())
+    res = requests.get(url, headers=header, proxies=proxy)
+    print(res.json())
     tag_list = res.json()['tags']
     return tag_list
 
@@ -33,7 +34,7 @@ def get_movies_data(url, params_list, tag):
     :param tag:
     :return:
     """
-    res = requests.get(url, headers=header)
+    res = requests.get(url, headers=header, proxies=proxy)
     # print(res.json())
     movies_datas = res.json()['subjects']
     for movies_data in movies_datas:
