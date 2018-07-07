@@ -9,12 +9,13 @@ from datetime import datetime
 import pymongo
 from scrapy.conf import settings
 
-from weibospider.items import WeibospiderItem
+from weibospider.items import WeibospiderItem, UserRelationItem
 
 
 class UserCreateTimePipeline(object):
     def process_item(self, item, spider):
-        item['create_time'] = datetime.now().strftime('%Y-%m-%d %H-%M')
+        if isinstance(item, WeibospiderItem):
+            item['create_time'] = datetime.now().strftime('%Y-%m-%d %H-%M')
         return item
 
 
@@ -32,6 +33,16 @@ class WeibospiderPymongoPipeline(object):
         self.collections = self.db[WeibospiderItem.Collections]
 
     def process_item(self, item, spider):
-        # self.collections.insert(dict(item))
-        self.collections.update({'id': dict(item)['id']}, {'$set': dict(item)}, upsert=True)
+        if isinstance(item, WeibospiderItem):
+            # self.collections.insert(dict(item))
+            self.collections.update({'id': dict(item)['id']}, {'$set': dict(item)}, upsert=True)
+        if isinstance(item, UserRelationItem):
+
+            self.collections.update({'id': item['id']},
+                                    {'$addToSet': {
+                                        'fans': {'$each': item['fans']},
+                                        'follower': {'$each': item['follower']}
+                                    }},
+                                    True
+                                    )
         return item

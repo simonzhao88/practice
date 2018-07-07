@@ -23,3 +23,12 @@ class WeibospiderItem(scrapy.Item):
     follow_count = scrapy.Field()
     avatar_hd = scrapy.Field()
     create_time = scrapy.Field()
+
+
+class UserRelationItem(scrapy.Item):
+
+    Collections = 'user'
+
+    id = scrapy.Field()
+    fans = scrapy.Field()
+    follower = scrapy.Field()

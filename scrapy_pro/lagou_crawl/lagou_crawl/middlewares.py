@@ -4,28 +4,11 @@
 #
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
-import random
 
 from scrapy import signals
-from scrapy.conf import settings
-from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
 
 
-class RandomUserAgent(UserAgentMiddleware):
-
-    def process_request(self, request, spider):
-        user_agent = random.choice(settings['USER_AGENT_LIST'])
-        request.headers.setdefault(b'User-Agent', user_agent)
-
-
-class RandomProxy(object):
-
-    def process_request(self, request, spider):
-        proxy = random.choice(settings['PROXY'])
-        request.meta['proxy'] = 'http://%s' % proxy
-
-
-class WeibospiderSpiderMiddleware(object):
+class LagouCrawlSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the spider middleware does not modify the
     # passed objects.
@@ -73,7 +56,7 @@ class WeibospiderSpiderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class WeibospiderDownloaderMiddleware(object):
+class LagouCrawlDownloaderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
     # scrapy acts as if the downloader middleware does not modify the
     # passed objects.
